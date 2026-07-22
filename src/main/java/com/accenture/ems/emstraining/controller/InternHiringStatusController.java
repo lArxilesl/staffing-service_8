@@ -13,43 +13,44 @@ import javax.validation.Valid;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/intern-hiring-statuses")
+@RequestMapping("/api/intern-hiring-status")
 @RequiredArgsConstructor
 public class InternHiringStatusController {
 
     private final InternHiringStatusService internHiringStatusService;
 
     @Operation(summary = "Get hiring status by id")
-    @GetMapping("/{id}")
+    @GetMapping("/get/{id}")
     public ResponseEntity<InternHiringStatusResponse> getById(@PathVariable Long id) {
         return ResponseEntity.ok(internHiringStatusService.getById(id));
     }
 
-    @Operation(summary = "Find all InternHiringStatuses")
-    @GetMapping
+    @Operation(summary = "Find all InternHiringStatus")
+    @GetMapping("/get-all")
     public ResponseEntity<List<InternHiringStatusResponse>> getAll() {
         return ResponseEntity.ok(internHiringStatusService.getAll());
     }
 
     @Operation(summary = "Create new hiring status")
-    @PostMapping
-    public ResponseEntity<InternHiringStatusResponse> create(@Valid @RequestBody InternHiringStatusRequest request) {
-        InternHiringStatusResponse response = internHiringStatusService.create(request);
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    @PostMapping("/create")
+    public ResponseEntity<String> create(@Valid @RequestBody InternHiringStatusRequest request) {
+        internHiringStatusService.create(request);
+        return ResponseEntity.status(HttpStatus.OK).body("Intern hiring status saved successfully");
     }
 
     @Operation(summary = "Update hiring status by id")
-    @PutMapping("/{id}")
-    public ResponseEntity<InternHiringStatusResponse> update(@PathVariable Long id,
+    @PutMapping("/update/{id}")
+    public ResponseEntity<String> update(@PathVariable Long id,
                                                              @Valid @RequestBody InternHiringStatusRequest request) {
-        return ResponseEntity.ok(internHiringStatusService.update(id, request));
+        internHiringStatusService.update(id, request);
+        return ResponseEntity.status(HttpStatus.OK).body("Intern hiring status updated successfully");
     }
 
     @Operation(summary = "Delete hiring status by id")
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<String> delete(@PathVariable Long id) {
         internHiringStatusService.delete(id);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.status(HttpStatus.OK).body("Intern hiring status deleted successfully");
     }
 }
 

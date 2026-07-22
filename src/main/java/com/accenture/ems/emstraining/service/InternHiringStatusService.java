@@ -11,9 +11,9 @@ public interface InternHiringStatusService {
 
     List<InternHiringStatusResponse> getAll();
 
-    InternHiringStatusResponse create(InternHiringStatusRequest request);
+    void create(InternHiringStatusRequest request);
 
-    InternHiringStatusResponse update(Long id, InternHiringStatusRequest request);
+    void update(Long id, InternHiringStatusRequest request);
 
     void delete(Long id);
 }

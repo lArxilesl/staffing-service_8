@@ -29,7 +29,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Import(GlobalExceptionHandler.class)
 class InternHiringStatusControllerTest {
 
-    private static final String BASE_URL = "/api/intern-hiring-statuses";
+    private static final String BASE_URL = "/api/intern-hiring-status";
 
     @Autowired
     private MockMvc mockMvc;
@@ -46,7 +46,7 @@ class InternHiringStatusControllerTest {
 
         when(internHiringStatusService.getById(1L)).thenReturn(response);
 
-        mockMvc.perform(get(BASE_URL + "/1"))
+        mockMvc.perform(get(BASE_URL + "/get/1"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(1L))
                 .andExpect(jsonPath("$.status").value("Good Status"));
@@ -58,46 +58,47 @@ class InternHiringStatusControllerTest {
 
         when(internHiringStatusService.getAll()).thenReturn(Collections.singletonList(response));
 
-        mockMvc.perform(get(BASE_URL))
+        mockMvc.perform(get(BASE_URL + "/get-all"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].id").value(1L))
                 .andExpect(jsonPath("$[0].status").value("Good Status"));
     }
 
     @Test
-    void create_ShouldReturnCreated() throws Exception {
+    void create_ShouldReturnOk() throws Exception {
         InternHiringStatusRequest request = new InternHiringStatusRequest("New Status");
-        InternHiringStatusResponse response = new InternHiringStatusResponse(4L, "New Status");
 
-        when(internHiringStatusService.create(any(InternHiringStatusRequest.class))).thenReturn(response);
+        doNothing().when(internHiringStatusService).create(any(InternHiringStatusRequest.class));
 
-        mockMvc.perform(post(BASE_URL)
+        mockMvc.perform(post(BASE_URL + "/create")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
-                .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.id").value(4L))
-                .andExpect(jsonPath("$.status").value("New Status"));
+                .andExpect(status().isOk())
+                .andExpect(content().string("Intern hiring status saved successfully"));
+
+        verify(internHiringStatusService).create(any(InternHiringStatusRequest.class));
     }
 
     @Test
     void update_ShouldReturnOk() throws Exception {
         InternHiringStatusRequest request = new InternHiringStatusRequest("Updated Status");
-        InternHiringStatusResponse response = new InternHiringStatusResponse(1L, "Updated Status");
 
-        when(internHiringStatusService.update(eq(1L), any(InternHiringStatusRequest.class))).thenReturn(response);
+        doNothing().when(internHiringStatusService).update(eq(1L), any(InternHiringStatusRequest.class));
 
-        mockMvc.perform(put(BASE_URL + "/1")
+        mockMvc.perform(put(BASE_URL + "/update/1")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(1L))
-                .andExpect(jsonPath("$.status").value("Updated Status"));
+                .andExpect(content().string("Intern hiring status updated successfully"));
+
+        verify(internHiringStatusService).update(eq(1L), any(InternHiringStatusRequest.class));
     }
 
     @Test
     void delete_ShouldReturnNoContent() throws Exception {
-        mockMvc.perform(delete(BASE_URL + "/1"))
-                .andExpect(status().isNoContent());
+        mockMvc.perform(delete(BASE_URL + "/delete/1"))
+                .andExpect(status().isOk())
+                .andExpect(content().string("Intern hiring status deleted successfully"));
 
         verify(internHiringStatusService).delete(1L);
     }
@@ -107,7 +108,7 @@ class InternHiringStatusControllerTest {
         when(internHiringStatusService.getById(99L))
                 .thenThrow(new ResourceNotFoundException("Intern Hiring Status not found with id: 99"));
 
-        mockMvc.perform(get(BASE_URL + "/99"))
+        mockMvc.perform(get(BASE_URL + "/get/99"))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.message").value("Intern Hiring Status not found with id: 99"));
     }
@@ -116,7 +117,7 @@ class InternHiringStatusControllerTest {
     void create_ShouldReturnBadRequest_WhenStatusIsBlank() throws Exception {
         InternHiringStatusRequest request = new InternHiringStatusRequest("");
 
-        mockMvc.perform(post(BASE_URL)
+        mockMvc.perform(post(BASE_URL + ("/create"))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isBadRequest());
@@ -128,7 +129,7 @@ class InternHiringStatusControllerTest {
     void update_ShouldReturnBadRequest_WhenStatusIsBlank() throws Exception {
         InternHiringStatusRequest request = new InternHiringStatusRequest("");
 
-        mockMvc.perform(put(BASE_URL + "/1")
+        mockMvc.perform(put(BASE_URL + "/update/1")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isBadRequest());

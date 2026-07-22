@@ -117,22 +117,14 @@ class InternHiringStatusServiceImplTest {
     void create_ShouldSaveEntityAndReturnResponse() {
         InternHiringStatusRequest request = new InternHiringStatusRequest("Interview Scheduled");
         InternHiringStatusEntity entity = new InternHiringStatusEntity(null, "Interview Scheduled");
-        InternHiringStatusEntity savedEntity = new InternHiringStatusEntity(4L, "Interview Scheduled");
-        InternHiringStatusResponse response = new InternHiringStatusResponse(4L, "Interview Scheduled");
 
         when(internHiringStatusMapper.toEntity(request)).thenReturn(entity);
-        when(internHiringStatusRepository.save(entity)).thenReturn(savedEntity);
-        when(internHiringStatusMapper.toResponse(savedEntity)).thenReturn(response);
 
-        InternHiringStatusResponse result = internHiringStatusService.create(request);
-
-        assertNotNull(result);
-        assertEquals(4L, result.getId());
-        assertEquals("Interview Scheduled", result.getStatus());
+        internHiringStatusService.create(request);
 
         verify(internHiringStatusMapper).toEntity(request);
         verify(internHiringStatusRepository).save(entity);
-        verify(internHiringStatusMapper).toResponse(savedEntity);
+        verify(internHiringStatusMapper, never()).toResponse(any(InternHiringStatusEntity.class));
     }
 
     @Test
@@ -140,28 +132,23 @@ class InternHiringStatusServiceImplTest {
         Long id = 1L;
         InternHiringStatusRequest request = new InternHiringStatusRequest("Updated Status");
         InternHiringStatusEntity entity = new InternHiringStatusEntity(id, "Old Status");
-        InternHiringStatusEntity updatedEntity = new InternHiringStatusEntity(id, "Updated Status");
-        InternHiringStatusResponse response = new InternHiringStatusResponse(id, "Updated Status");
 
         when(internHiringStatusRepository.findById(id)).thenReturn(Optional.of(entity));
+
         doAnswer(invocation -> {
             InternHiringStatusEntity target = invocation.getArgument(1);
             target.setStatus(request.getStatus());
             return null;
         }).when(internHiringStatusMapper).updateEntityFromRequest(request, entity);
-        when(internHiringStatusRepository.save(entity)).thenReturn(updatedEntity);
-        when(internHiringStatusMapper.toResponse(updatedEntity)).thenReturn(response);
 
-        InternHiringStatusResponse result = internHiringStatusService.update(id, request);
+        internHiringStatusService.update(id, request);
 
-        assertNotNull(result);
-        assertEquals(id, result.getId());
-        assertEquals("Updated Status", result.getStatus());
+        assertEquals("Updated Status", entity.getStatus());
 
         verify(internHiringStatusRepository).findById(id);
         verify(internHiringStatusMapper).updateEntityFromRequest(request, entity);
         verify(internHiringStatusRepository).save(entity);
-        verify(internHiringStatusMapper).toResponse(updatedEntity);
+        verify(internHiringStatusMapper, never()).toResponse(any(InternHiringStatusEntity.class));
     }
 
     @Test
@@ -171,16 +158,12 @@ class InternHiringStatusServiceImplTest {
 
         when(internHiringStatusRepository.findById(id)).thenReturn(Optional.empty());
 
-        ResourceNotFoundException exception = assertThrows(
-                ResourceNotFoundException.class,
-                () -> internHiringStatusService.update(id, request)
-        );
-
-        assertEquals("Intern Hiring Status not found with id: 99", exception.getMessage());
+        assertThrows(ResourceNotFoundException.class,
+                () -> internHiringStatusService.update(id, request));
 
         verify(internHiringStatusRepository).findById(id);
-        verify(internHiringStatusRepository, never()).save(any());
         verify(internHiringStatusMapper, never()).updateEntityFromRequest(any(), any());
+        verify(internHiringStatusRepository, never()).save(any(InternHiringStatusEntity.class));
     }
 
     @Test

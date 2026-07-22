@@ -32,18 +32,16 @@ public class InternHiringStatusServiceImpl implements InternHiringStatusService 
     }
 
     @Override
-    public InternHiringStatusResponse create(InternHiringStatusRequest request) {
+    public void create(InternHiringStatusRequest request) {
         InternHiringStatusEntity entity = internHiringStatusMapper.toEntity(request);
-        InternHiringStatusEntity savedEntity = internHiringStatusRepository.save(entity);
-        return internHiringStatusMapper.toResponse(savedEntity);
+        internHiringStatusRepository.save(entity);
     }
 
     @Override
-    public InternHiringStatusResponse update(Long id, InternHiringStatusRequest request) {
+    public void update(Long id, InternHiringStatusRequest request) {
         InternHiringStatusEntity entity = findEntityById(id);
         internHiringStatusMapper.updateEntityFromRequest(request, entity);
-        InternHiringStatusEntity updatedEntity = internHiringStatusRepository.save(entity);
-        return internHiringStatusMapper.toResponse(updatedEntity);
+        internHiringStatusRepository.save(entity);
     }
 
     @Override
