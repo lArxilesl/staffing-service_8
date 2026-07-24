@@ -1,7 +1,6 @@
 package com.accenture.ems.emstraining.service;
 
 import com.accenture.ems.emstraining.entity.InternHiringStatusEntity;
-import com.accenture.ems.emstraining.exception.ResourceNotFoundException;
 import com.accenture.ems.emstraining.mapper.InternHiringStatusMapper;
 import com.accenture.ems.emstraining.model.InternHiringStatusRequest;
 import com.accenture.ems.emstraining.model.InternHiringStatusResponse;
@@ -37,34 +36,38 @@ class InternHiringStatusServiceImplTest {
     @Test
     void getById_ShouldReturnResponse_WhenEntityExists() {
         Long id = 1L;
-        InternHiringStatusEntity entity = new InternHiringStatusEntity(id, "Good Status");
-        InternHiringStatusResponse response = new InternHiringStatusResponse(id, "Good Status");
+        InternHiringStatusEntity entity =
+                new InternHiringStatusEntity(id, "Good Status");
+        InternHiringStatusResponse response =
+                new InternHiringStatusResponse(id, "Good Status");
 
-        when(internHiringStatusRepository.findById(id)).thenReturn(Optional.of(entity));
-        when(internHiringStatusMapper.toResponse(entity)).thenReturn(response);
+        when(internHiringStatusRepository.findById(id))
+                .thenReturn(Optional.of(entity));
+        when(internHiringStatusMapper.toResponse(entity))
+                .thenReturn(response);
 
-        InternHiringStatusResponse result = internHiringStatusService.getById(id);
+        Optional<InternHiringStatusResponse> result =
+                internHiringStatusService.getById(id);
 
-        assertNotNull(result);
-        assertEquals(id, result.getId());
-        assertEquals("Good Status", result.getStatus());
+        assertTrue(result.isPresent());
+        assertEquals(id, result.get().getId());
+        assertEquals("Good Status", result.get().getStatus());
 
         verify(internHiringStatusRepository).findById(id);
         verify(internHiringStatusMapper).toResponse(entity);
     }
 
     @Test
-    void getById_ShouldThrowResourceNotFoundException_WhenEntityDoesNotExist() {
+    void getById_ShouldReturnEmpty_WhenEntityDoesNotExist() {
         Long id = 99L;
 
-        when(internHiringStatusRepository.findById(id)).thenReturn(Optional.empty());
+        when(internHiringStatusRepository.findById(id))
+                .thenReturn(Optional.empty());
 
-        ResourceNotFoundException exception = assertThrows(
-                ResourceNotFoundException.class,
-                () -> internHiringStatusService.getById(id)
-        );
+        Optional<InternHiringStatusResponse> result =
+                internHiringStatusService.getById(id);
 
-        assertEquals("Intern Hiring Status not found with id: 99", exception.getMessage());
+        assertFalse(result.isPresent());
 
         verify(internHiringStatusRepository).findById(id);
         verifyZeroInteractions(internHiringStatusMapper);
@@ -152,18 +155,21 @@ class InternHiringStatusServiceImplTest {
     }
 
     @Test
-    void update_ShouldThrowResourceNotFoundException_WhenEntityDoesNotExist() {
+    void update_ShouldReturnFalse_WhenEntityDoesNotExist() {
         Long id = 99L;
-        InternHiringStatusRequest request = new InternHiringStatusRequest("Updated Status");
+        InternHiringStatusRequest request =
+                new InternHiringStatusRequest("Updated Status");
 
-        when(internHiringStatusRepository.findById(id)).thenReturn(Optional.empty());
+        when(internHiringStatusRepository.findById(id))
+                .thenReturn(Optional.empty());
 
-        assertThrows(ResourceNotFoundException.class,
-                () -> internHiringStatusService.update(id, request));
+        boolean result = internHiringStatusService.update(id, request);
+
+        assertFalse(result);
 
         verify(internHiringStatusRepository).findById(id);
-        verify(internHiringStatusMapper, never()).updateEntityFromRequest(any(), any());
-        verify(internHiringStatusRepository, never()).save(any(InternHiringStatusEntity.class));
+        verify(internHiringStatusRepository, never()).save(any());
+        verifyZeroInteractions(internHiringStatusMapper);
     }
 
     @Test
@@ -180,17 +186,15 @@ class InternHiringStatusServiceImplTest {
     }
 
     @Test
-    void delete_ShouldThrowResourceNotFoundException_WhenEntityDoesNotExist() {
+    void delete_ShouldReturnFalse_WhenEntityDoesNotExist() {
         Long id = 99L;
 
-        when(internHiringStatusRepository.findById(id)).thenReturn(Optional.empty());
+        when(internHiringStatusRepository.findById(id))
+                .thenReturn(Optional.empty());
 
-        ResourceNotFoundException exception = assertThrows(
-                ResourceNotFoundException.class,
-                () -> internHiringStatusService.delete(id)
-        );
+        boolean result = internHiringStatusService.delete(id);
 
-        assertEquals("Intern Hiring Status not found with id: 99", exception.getMessage());
+        assertFalse(result);
 
         verify(internHiringStatusRepository).findById(id);
         verify(internHiringStatusRepository, never()).delete(any());
