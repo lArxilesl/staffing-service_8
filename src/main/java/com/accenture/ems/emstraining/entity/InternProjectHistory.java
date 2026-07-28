@@ -4,14 +4,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import javax.persistence.Column;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Table;
-import javax.persistence.Id;
-import javax.persistence.Entity;
-import javax.persistence.ManyToOne;
-import javax.persistence.JoinColumn;
+import javax.persistence.*;
 
 @Getter
 @Setter
@@ -25,21 +18,21 @@ public class InternProjectHistory {
     @Column(name = "id")
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "intern_staffing_id", nullable = false)
-    private Long internStaffingId;
+    private InternStaffing internStaffing;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "project_id", nullable = false)
-    private Long projectId;
+    private Project project;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "responsible_person_id", nullable = false)
-    private Long responsiblePersonId;
+    private Employee responsiblePerson;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "project_hiring_status_id", nullable = false)
-    private Long projectHiringStatusId;
+    private ProjectHiringStatus projectHiringStatus;
 
     @Column(name = "comments")
     private String comments;

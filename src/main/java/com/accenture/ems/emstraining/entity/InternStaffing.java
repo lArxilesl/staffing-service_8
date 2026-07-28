@@ -4,19 +4,13 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import javax.persistence.Id;
-import javax.persistence.GeneratedValue;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
-import javax.persistence.GenerationType;
-import javax.persistence.Column;
-import javax.persistence.JoinColumn;
-
+import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @Getter
 @Setter
 @NoArgsConstructor
+@Entity
 @Table(name = "intern_staffing")
 public class InternStaffing {
 
@@ -25,13 +19,13 @@ public class InternStaffing {
     @Column(name = "id")
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "employee_id")
-    private Long employeeId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "employee_id", nullable = false)
+    private Employee employee;
 
-    @ManyToOne
-    @JoinColumn(name = "internship_hiring_status")
-    private Long internshipHiringStatusId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "intern_hiring_status_id", nullable = false)
+    private InternHiringStatus internHiringStatus;
 
     @Column(name = "internship_workload")
     private Integer internshipWorkload;
@@ -39,6 +33,6 @@ public class InternStaffing {
     @Column(name = "workload")
     private Integer workload;
 
-    @Column(name = "extension")
+    @Column(name = "extension", nullable = false)
     private LocalDateTime extension;
 }
