@@ -18,7 +18,7 @@ import java.util.Optional;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api")
+@RequestMapping("/api/intern/project/history")
 public class InternProjectHistoryController {
 
     private final InternProjectHistoryService internProjectHistoryService;
@@ -29,7 +29,7 @@ public class InternProjectHistoryController {
             @ApiResponse(code = 500, message = HTMLResponseMessages.HTTP_500)
 
     })
-    @GetMapping("/intern/project/history")
+    @GetMapping
     public ResponseEntity<List<InternProjectHistoryResponseDto>> getAll(){
         log.info("Fetching all InternProjectHistories");
         List<InternProjectHistoryResponseDto> result = internProjectHistoryService.getAll();
@@ -44,7 +44,7 @@ public class InternProjectHistoryController {
             @ApiResponse(code = 500, message = HTMLResponseMessages.HTTP_500)
 
     })
-    @GetMapping("/intern/project/history/{id}")
+    @GetMapping("/{id}")
     public ResponseEntity<InternProjectHistoryResponseDto> getById(@PathVariable Long id){
         log.info("Request to get InternProjectHistory with id {}", id);
         Optional<InternProjectHistoryResponseDto> result = internProjectHistoryService.getById(id);
@@ -65,7 +65,7 @@ public class InternProjectHistoryController {
             @ApiResponse(code = 500, message = HTMLResponseMessages.HTTP_500)
 
     })
-    @PostMapping("/intern/project/history")
+    @PostMapping
     public ResponseEntity<InternProjectHistoryResponseDto> createInternProjectHistory(@RequestBody InternProjectHistoryRequestDto internProjectHistoryRequestDto){
         log.info("Request to create a new InternProjectHistory entry: {}", internProjectHistoryRequestDto);
         InternProjectHistoryResponseDto created = internProjectHistoryService.create(internProjectHistoryRequestDto);
@@ -81,7 +81,7 @@ public class InternProjectHistoryController {
             @ApiResponse(code = 500, message = HTMLResponseMessages.HTTP_500)
 
     })
-    @PutMapping("/intern/project/history/{id}")
+    @PutMapping("/{id}")
     public ResponseEntity<InternProjectHistoryResponseDto> updateInternProjectHistory(@PathVariable Long id, @RequestBody InternProjectHistoryRequestDto internProjectHistoryRequestDto){
         log.info("Request to update InternProjectHistory with id: {}", id);
         Optional<InternProjectHistoryResponseDto> existing = internProjectHistoryService.getById(id);
@@ -101,7 +101,7 @@ public class InternProjectHistoryController {
             @ApiResponse(code = 500, message = HTMLResponseMessages.HTTP_500)
 
     })
-    @DeleteMapping("/intern/project/history/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<InternProjectHistoryResponseDto> deleteInternProjectHistory(@PathVariable Long id) {
         Optional<InternProjectHistoryResponseDto> toDelete = internProjectHistoryService.getById(id);
         if (toDelete.isPresent()) {
