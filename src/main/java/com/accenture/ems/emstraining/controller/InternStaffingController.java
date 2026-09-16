@@ -2,7 +2,6 @@ package com.accenture.ems.emstraining.controller;
 
 import com.accenture.ems.emstraining.model.InternStaffingResponse;
 import com.accenture.ems.emstraining.model.InternStaffingSummaryResponse;
-import com.accenture.ems.emstraining.repository.InternStaffingRepository;
 import com.accenture.ems.emstraining.service.InternStaffingService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,7 +20,6 @@ import java.util.Optional;
 public class InternStaffingController {
 
     private final InternStaffingService internStaffingService;
-    private final InternStaffingRepository internStaffingRepository;
 
     @GetMapping
     public List<InternStaffingSummaryResponse> getAll() {
