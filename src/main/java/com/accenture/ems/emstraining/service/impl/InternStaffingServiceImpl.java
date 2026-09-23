@@ -33,18 +33,22 @@ public class InternStaffingServiceImpl implements InternStaffingService {
         return internStaffingRepository
                 .findById(id)
                 .map(internStaffingMapper::toResponse)
-                .orElseThrow(() -> new ResourceNotFoundException(String.format("Intern Staffing with id: %d not found", id)));
+                .orElseThrow(() ->
+                {
+                    log.warn("No Intern Staffing with id {} found", id);
+                    return new ResourceNotFoundException(String.format("Intern Staffing with id: %d not found", id));
+                });
     }
 
     @Override
     public void delete(Long id) {
         log.info("Deleting intern staffing {}", id);
         if (!internStaffingRepository.existsById(id)) {
-            log.error("Intern Staffing with id {} does not exist", id);
+            log.warn("Intern Staffing with id {} does not exist", id);
             throw new ResourceNotFoundException(String.format("Intern Staffing with id: %d not found", id));
         }
         if (internProjectHistoryRepository.existsByInternStaffingId(id)) {
-            log.error("Cannot delete intern staffing with id: {} because it has project history", id);
+            log.warn("Cannot delete intern staffing with id: {} because it has project history", id);
             throw new StaffingHasProjectHistoryException(String.format("Cannot delete intern staffing with id: %d because it has project history", id));
         }
         internStaffingRepository.deleteById(id);

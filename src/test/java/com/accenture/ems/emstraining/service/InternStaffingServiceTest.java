@@ -1,6 +1,7 @@
 package com.accenture.ems.emstraining.service;
 
 import com.accenture.ems.emstraining.entity.InternStaffing;
+import com.accenture.ems.emstraining.exception.ResourceNotFoundException;
 import com.accenture.ems.emstraining.mapper.InternStaffingMapper;
 import com.accenture.ems.emstraining.model.EmployeeResponse;
 import com.accenture.ems.emstraining.model.InternHiringStatusResponse;
@@ -18,6 +19,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.*;
 
 @DisplayName("InternStaffingService Tests")
@@ -69,21 +71,22 @@ class InternStaffingServiceTest {
         when(internStaffingRepository.findById(1L)).thenReturn(Optional.of(internStaffing));
         when(internStaffingMapper.toResponse(internStaffing)).thenReturn(internStaffingResponse);
 
-        Optional<InternStaffingResponse> result = internStaffingService.findById(1L);
+        InternStaffingResponse result = internStaffingService.findById(1L);
 
-        assertThat(result).isPresent().contains(internStaffingResponse);
+        assertThat(result).isEqualTo(internStaffingResponse);
 
         verify(internStaffingRepository, times(1)).findById(1L);
         verify(internStaffingMapper, times(1)).toResponse(internStaffing);
     }
 
     @Test
-    @DisplayName("Should return empty optional when ID doesn't exist")
-    void shouldReturnEmptyOptionalWhenIdDoesntExist() {
+    @DisplayName("Should throw ResourceNotFoundException when ID does not exist")
+    void shouldThrowWhenIdDoesntExist() {
         when(internStaffingRepository.findById(1L)).thenReturn(Optional.empty());
 
-        Optional<InternStaffingResponse> result = internStaffingService.findById(1L);
-        assertThat(result).isEmpty();
+        assertThatThrownBy(() -> internStaffingService.findById(1L))
+                .isInstanceOf(ResourceNotFoundException.class)
+                .hasMessage("Intern Staffing with id: 1 not found");
 
         verify(internStaffingRepository, times(1)).findById(1L);
         verify(internStaffingMapper, never()).toResponse(any());
