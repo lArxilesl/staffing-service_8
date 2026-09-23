@@ -5,13 +5,10 @@ import com.accenture.ems.emstraining.model.InternStaffingSummaryResponse;
 import com.accenture.ems.emstraining.service.InternStaffingService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @Slf4j
 @RestController
@@ -31,11 +28,15 @@ public class InternStaffingController {
     }
 
     @GetMapping("/{id}")
-    public Optional<InternStaffingResponse> getById(@PathVariable Long id) {
-        log.info("Fetch intern Staffing with id: {}", id);
-        Optional<InternStaffingResponse> result = internStaffingService.findById(id);
-        log.info("Returning intern Staffing with id: {}", id);
+    public InternStaffingResponse getById(@PathVariable Long id) {
 
-        return result;
+        return internStaffingService.findById(id);
+    }
+
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteById(@PathVariable Long id) {
+        internStaffingService.delete(id);
+        log.info("Delete intern Staffing with id: {}", id);
     }
 }
