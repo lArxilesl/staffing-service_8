@@ -1,6 +1,7 @@
 package com.accenture.ems.emstraining.mapper;
 
 import com.accenture.ems.emstraining.entity.InternStaffing;
+import com.accenture.ems.emstraining.model.InternStaffingRequest;
 import com.accenture.ems.emstraining.model.InternStaffingResponse;
 import com.accenture.ems.emstraining.model.InternStaffingSummaryResponse;
 import org.mapstruct.Mapper;
@@ -19,4 +20,6 @@ public interface InternStaffingMapper {
     InternStaffingSummaryResponse toSummaryResponse(InternStaffing staffing);
 
     InternStaffingResponse toResponse(InternStaffing staffing);
+
+    InternStaffing toEntity(InternStaffingRequest internStaffingRequest);
 }

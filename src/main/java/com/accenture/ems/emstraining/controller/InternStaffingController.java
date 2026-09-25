@@ -1,11 +1,13 @@
 package com.accenture.ems.emstraining.controller;
 
+import com.accenture.ems.emstraining.model.InternStaffingRequest;
 import com.accenture.ems.emstraining.model.InternStaffingResponse;
 import com.accenture.ems.emstraining.model.InternStaffingSummaryResponse;
 import com.accenture.ems.emstraining.service.InternStaffingService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -38,5 +40,11 @@ public class InternStaffingController {
     public void deleteById(@PathVariable Long id) {
         internStaffingService.delete(id);
         log.info("Delete intern Staffing with id: {}", id);
+    }
+
+    @PostMapping()
+    public void createStaffing(@Validated @RequestBody InternStaffingRequest internStaffingRequest) {
+
+        internStaffingService.create(internStaffingRequest);
     }
 }

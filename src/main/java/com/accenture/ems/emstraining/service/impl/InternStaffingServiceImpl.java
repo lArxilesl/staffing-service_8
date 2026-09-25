@@ -3,6 +3,7 @@ package com.accenture.ems.emstraining.service.impl;
 import com.accenture.ems.emstraining.exception.ResourceNotFoundException;
 import com.accenture.ems.emstraining.exception.StaffingHasProjectHistoryException;
 import com.accenture.ems.emstraining.mapper.InternStaffingMapper;
+import com.accenture.ems.emstraining.model.InternStaffingRequest;
 import com.accenture.ems.emstraining.model.InternStaffingResponse;
 import com.accenture.ems.emstraining.model.InternStaffingSummaryResponse;
 import com.accenture.ems.emstraining.repository.InternProjectHistoryRepository;
@@ -52,5 +53,10 @@ public class InternStaffingServiceImpl implements InternStaffingService {
             throw new StaffingHasProjectHistoryException(String.format("Cannot delete intern staffing with id: %d because it has project history", id));
         }
         internStaffingRepository.deleteById(id);
+    }
+
+    @Override
+    public void create(InternStaffingRequest internStaffingRequest) {
+        internStaffingRepository.save(internStaffingMapper.toEntity(internStaffingRequest));
     }
 }

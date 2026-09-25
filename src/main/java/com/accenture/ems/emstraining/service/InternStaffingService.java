@@ -1,5 +1,6 @@
 package com.accenture.ems.emstraining.service;
 
+import com.accenture.ems.emstraining.model.InternStaffingRequest;
 import com.accenture.ems.emstraining.model.InternStaffingResponse;
 import com.accenture.ems.emstraining.model.InternStaffingSummaryResponse;
 
@@ -11,4 +12,6 @@ public interface InternStaffingService {
     InternStaffingResponse findById(Long id);
 
     void delete(Long id);
+
+    void create(InternStaffingRequest internStaffingRequest);
 }

@@ -10,6 +10,7 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 import javax.persistence.EntityNotFoundException;
 import java.text.MessageFormat;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeParseException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -46,9 +47,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     public ResponseEntity<Map<String, Object>> handleInvalidTypeException(MethodArgumentTypeMismatchException exception) {
         Map<String, Object> errorResponse = new HashMap<>();
-        String message = MessageFormat.format("{0} should be {1}",
-                exception.getName(),
-                exception.getRequiredType().getSimpleName());
+        String message = MessageFormat.format("Invalid value for {0}", exception.getName());
         errorResponse.put("timestamp", LocalDateTime.now());
         errorResponse.put("status", HttpStatus.BAD_REQUEST.value());
         errorResponse.put("error", HttpStatus.BAD_REQUEST.getReasonPhrase());
@@ -60,7 +59,19 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(StaffingHasProjectHistoryException.class)
     public ResponseEntity<Map<String, Object>> handleStaffingHasProjectHistoryException(StaffingHasProjectHistoryException exception) {
         Map<String, Object> errorResponse = new HashMap<>();
-        String message = exception.getMessage();
+        String message = "please provide ";
+        errorResponse.put("timestamp", LocalDateTime.now());
+        errorResponse.put("status", HttpStatus.CONFLICT.value());
+        errorResponse.put("error", HttpStatus.CONFLICT.getReasonPhrase());
+        errorResponse.put("message", message);
+
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(errorResponse);
+    }
+
+    @ExceptionHandler(DateTimeParseException.class)
+    public ResponseEntity<Map<String, Object>> handleDateTimeParseException(DateTimeParseException exception) {
+        Map<String, Object> errorResponse = new HashMap<>();
+        String message = "Invalid date format";
         errorResponse.put("timestamp", LocalDateTime.now());
         errorResponse.put("status", HttpStatus.CONFLICT.value());
         errorResponse.put("error", HttpStatus.CONFLICT.getReasonPhrase());
