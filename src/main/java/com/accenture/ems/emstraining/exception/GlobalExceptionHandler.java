@@ -59,11 +59,10 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(StaffingHasProjectHistoryException.class)
     public ResponseEntity<Map<String, Object>> handleStaffingHasProjectHistoryException(StaffingHasProjectHistoryException exception) {
         Map<String, Object> errorResponse = new HashMap<>();
-        String message = "please provide ";
         errorResponse.put("timestamp", LocalDateTime.now());
         errorResponse.put("status", HttpStatus.CONFLICT.value());
         errorResponse.put("error", HttpStatus.CONFLICT.getReasonPhrase());
-        errorResponse.put("message", message);
+        errorResponse.put("message", exception.getMessage());
 
         return ResponseEntity.status(HttpStatus.CONFLICT).body(errorResponse);
     }
@@ -73,10 +72,10 @@ public class GlobalExceptionHandler {
         Map<String, Object> errorResponse = new HashMap<>();
         String message = "Invalid date format";
         errorResponse.put("timestamp", LocalDateTime.now());
-        errorResponse.put("status", HttpStatus.CONFLICT.value());
-        errorResponse.put("error", HttpStatus.CONFLICT.getReasonPhrase());
+        errorResponse.put("status", HttpStatus.BAD_REQUEST.value());
+        errorResponse.put("error", HttpStatus.BAD_REQUEST.getReasonPhrase());
         errorResponse.put("message", message);
 
-        return ResponseEntity.status(HttpStatus.CONFLICT).body(errorResponse);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
     }
 }
