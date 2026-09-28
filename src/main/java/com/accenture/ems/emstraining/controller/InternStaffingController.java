@@ -25,7 +25,7 @@ public class InternStaffingController {
     @GetMapping
     public List<InternStaffingSummaryResponse> getAll() {
         log.info("Fetch all intern Staffings");
-        List<InternStaffingSummaryResponse> result = internStaffingService.findAll();
+        List<InternStaffingSummaryResponse> result = internStaffingService.getAll();
         log.info("Returning all intern Staffings");
 
         return result;
@@ -34,7 +34,7 @@ public class InternStaffingController {
     @GetMapping("/{id}")
     public InternStaffingResponse getById(@PathVariable Long id) {
 
-        return internStaffingService.findById(id);
+        return internStaffingService.getById(id);
     }
 
     @DeleteMapping("/{id}")
@@ -45,13 +45,13 @@ public class InternStaffingController {
     }
 
     @PostMapping()
-    public ResponseEntity<InternStaffingResponse> createStaffing(@Valid @RequestBody InternStaffingRequest internStaffingRequest) {
+    public ResponseEntity<InternStaffingResponse> create(@Valid @RequestBody InternStaffingRequest internStaffingRequest) {
 
         return ResponseEntity.status(HttpStatus.CREATED).body(internStaffingService.create(internStaffingRequest));
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<InternStaffingResponse> updateStaffing(@PathVariable Long id, @Valid @RequestBody InternStaffingPatchRequest internStaffingPatchRequest) {
+    public ResponseEntity<InternStaffingResponse> update(@PathVariable Long id, @Valid @RequestBody InternStaffingPatchRequest internStaffingPatchRequest) {
 
         return ResponseEntity.ok(internStaffingService.update(id, internStaffingPatchRequest));
     }

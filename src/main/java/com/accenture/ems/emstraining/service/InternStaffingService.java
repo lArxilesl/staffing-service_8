@@ -9,9 +9,9 @@ import javax.validation.Valid;
 import java.util.List;
 
 public interface InternStaffingService {
-    List<InternStaffingSummaryResponse> findAll();
+    List<InternStaffingSummaryResponse> getAll();
 
-    InternStaffingResponse findById(Long id);
+    InternStaffingResponse getById(Long id);
 
     void delete(Long id);
 

@@ -33,13 +33,13 @@ public class InternStaffingServiceImpl implements InternStaffingService {
     private final InternHiringStatusRepository internHiringStatusRepository;
 
     @Override
-    public List<InternStaffingSummaryResponse> findAll() {
+    public List<InternStaffingSummaryResponse> getAll() {
         log.debug("Fetching all intern staffings");
         return internStaffingMapper.toResponseList(internStaffingRepository.findAll());
     }
 
     @Override
-    public InternStaffingResponse findById(Long id) {
+    public InternStaffingResponse getById(Long id) {
         log.info("Request to find intern staffing {}", id);
         return internStaffingRepository
                 .findById(id)
