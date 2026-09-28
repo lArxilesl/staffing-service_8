@@ -6,6 +6,7 @@ import com.accenture.ems.emstraining.entity.InternStaffing;
 import com.accenture.ems.emstraining.exception.ResourceNotFoundException;
 import com.accenture.ems.emstraining.exception.StaffingHasProjectHistoryException;
 import com.accenture.ems.emstraining.mapper.InternStaffingMapper;
+import com.accenture.ems.emstraining.model.InternStaffingPatchRequest;
 import com.accenture.ems.emstraining.model.InternStaffingRequest;
 import com.accenture.ems.emstraining.model.InternStaffingResponse;
 import com.accenture.ems.emstraining.model.InternStaffingSummaryResponse;
@@ -18,6 +19,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @Service
@@ -84,5 +86,38 @@ public class InternStaffingServiceImpl implements InternStaffingService {
         entity.setInternHiringStatus(status);
 
         return internStaffingMapper.toResponse(internStaffingRepository.save(entity));
+    }
+
+    @Override
+    public InternStaffingResponse update(Long id, @Valid InternStaffingPatchRequest internStaffingPatchRequest) {
+        log.info("Request to update Intern Staffing {} with: {}", id, internStaffingPatchRequest);
+
+        log.info("Checking if Staffing {} exists", id);
+        InternStaffing staffing = internStaffingRepository.findById(id).orElseThrow(() -> {
+            log.warn("No Staffing with id {} found", id);
+            return new ResourceNotFoundException(String.format("No Staffing with id %d found", id));
+        });
+        log.info("Checking if Employee {} exists", internStaffingPatchRequest.getEmployeeId());
+        if (internStaffingPatchRequest.getEmployeeId() != null) {
+            Employee employee = employeeRepository.findById(internStaffingPatchRequest.getEmployeeId()).orElseThrow(() -> {
+                log.warn("No Employee with id {} found", internStaffingPatchRequest.getEmployeeId());
+                return new ResourceNotFoundException(String.format("No Employee with id %d found", internStaffingPatchRequest.getEmployeeId()));
+            });
+            staffing.setEmployee(employee);
+        }
+
+        log.info("Checking if InternHiringStatus {} exists", internStaffingPatchRequest.getInternHiringStatusId());
+        if (internStaffingPatchRequest.getInternHiringStatusId() != null) {
+            InternHiringStatusEntity status = internHiringStatusRepository.findById(internStaffingPatchRequest.getInternHiringStatusId()).orElseThrow(() -> {
+                log.warn("No Hiring Status with id {} found", internStaffingPatchRequest.getInternHiringStatusId());
+                return new ResourceNotFoundException(String.format("No Hiring Status with id %d found", internStaffingPatchRequest.getInternHiringStatusId()));
+            });
+            staffing.setInternHiringStatus(status);
+        }
+
+        internStaffingMapper.updateStaffing(internStaffingPatchRequest, staffing);
+
+
+        return internStaffingMapper.toResponse(internStaffingRepository.save(staffing));
     }
 }

@@ -1,5 +1,6 @@
 package com.accenture.ems.emstraining.controller;
 
+import com.accenture.ems.emstraining.model.InternStaffingPatchRequest;
 import com.accenture.ems.emstraining.model.InternStaffingRequest;
 import com.accenture.ems.emstraining.model.InternStaffingResponse;
 import com.accenture.ems.emstraining.model.InternStaffingSummaryResponse;
@@ -8,9 +9,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @Slf4j
@@ -44,8 +45,14 @@ public class InternStaffingController {
     }
 
     @PostMapping()
-    public ResponseEntity<InternStaffingResponse> createStaffing(@Validated @RequestBody InternStaffingRequest internStaffingRequest) {
+    public ResponseEntity<InternStaffingResponse> createStaffing(@Valid @RequestBody InternStaffingRequest internStaffingRequest) {
 
-        return ResponseEntity.ok(internStaffingService.create(internStaffingRequest));
+        return ResponseEntity.status(HttpStatus.CREATED).body(internStaffingService.create(internStaffingRequest));
+    }
+
+    @PatchMapping("/{id}")
+    public ResponseEntity<InternStaffingResponse> updateStaffing(@PathVariable Long id, @Valid @RequestBody InternStaffingPatchRequest internStaffingPatchRequest) {
+
+        return ResponseEntity.ok(internStaffingService.update(id, internStaffingPatchRequest));
     }
 }

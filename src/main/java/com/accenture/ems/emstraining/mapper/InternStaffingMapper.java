@@ -1,12 +1,15 @@
 package com.accenture.ems.emstraining.mapper;
 
 import com.accenture.ems.emstraining.entity.InternStaffing;
+import com.accenture.ems.emstraining.model.InternStaffingPatchRequest;
 import com.accenture.ems.emstraining.model.InternStaffingRequest;
 import com.accenture.ems.emstraining.model.InternStaffingResponse;
 import com.accenture.ems.emstraining.model.InternStaffingSummaryResponse;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @Mapper(componentModel = "spring")
@@ -16,10 +19,12 @@ public interface InternStaffingMapper {
 
     @Mapping(source = "employee.employeeId", target = "employeeId")
     @Mapping(source = "employee.surname", target = "employeeSurname")
-    @Mapping(source = "internHiringStatus.status", target = "internHiringStatusEntity")
+    @Mapping(source = "internHiringStatus.status", target = "internHiringStatus")
     InternStaffingSummaryResponse toSummaryResponse(InternStaffing staffing);
 
     InternStaffingResponse toResponse(InternStaffing staffing);
 
     InternStaffing toEntity(InternStaffingRequest internStaffingRequest);
+
+    void updateStaffing(@Valid InternStaffingPatchRequest internStaffingRequest, @MappingTarget InternStaffing staffing);
 }
