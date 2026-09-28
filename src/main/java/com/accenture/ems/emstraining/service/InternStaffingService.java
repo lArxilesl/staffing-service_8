@@ -13,5 +13,5 @@ public interface InternStaffingService {
 
     void delete(Long id);
 
-    void create(InternStaffingRequest internStaffingRequest);
+    InternStaffingResponse create(InternStaffingRequest internStaffingRequest);
 }

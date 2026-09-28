@@ -21,5 +21,7 @@ public interface InternStaffingMapper {
 
     InternStaffingResponse toResponse(InternStaffing staffing);
 
+    @Mapping(source = "employeeId", target = "employee.employeeId")
+    @Mapping(source = "internHiringStatusId", target = "internHiringStatus.id")
     InternStaffing toEntity(InternStaffingRequest internStaffingRequest);
 }
