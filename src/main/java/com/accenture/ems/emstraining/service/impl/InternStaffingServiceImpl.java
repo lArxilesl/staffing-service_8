@@ -97,8 +97,9 @@ public class InternStaffingServiceImpl implements InternStaffingService {
             log.warn("No Staffing with id {} found", id);
             return new ResourceNotFoundException(String.format("No Staffing with id %d found", id));
         });
-        log.info("Checking if Employee {} exists", internStaffingPatchRequest.getEmployeeId());
+
         if (internStaffingPatchRequest.getEmployeeId() != null) {
+            log.info("Checking if Employee {} exists", internStaffingPatchRequest.getEmployeeId());
             Employee employee = employeeRepository.findById(internStaffingPatchRequest.getEmployeeId()).orElseThrow(() -> {
                 log.warn("No Employee with id {} found", internStaffingPatchRequest.getEmployeeId());
                 return new ResourceNotFoundException(String.format("No Employee with id %d found", internStaffingPatchRequest.getEmployeeId()));
@@ -106,8 +107,8 @@ public class InternStaffingServiceImpl implements InternStaffingService {
             staffing.setEmployee(employee);
         }
 
-        log.info("Checking if InternHiringStatus {} exists", internStaffingPatchRequest.getInternHiringStatusId());
         if (internStaffingPatchRequest.getInternHiringStatusId() != null) {
+            log.info("Checking if InternHiringStatus {} exists", internStaffingPatchRequest.getInternHiringStatusId());
             InternHiringStatusEntity status = internHiringStatusRepository.findById(internStaffingPatchRequest.getInternHiringStatusId()).orElseThrow(() -> {
                 log.warn("No Hiring Status with id {} found", internStaffingPatchRequest.getInternHiringStatusId());
                 return new ResourceNotFoundException(String.format("No Hiring Status with id %d found", internStaffingPatchRequest.getInternHiringStatusId()));
