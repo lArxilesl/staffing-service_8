@@ -25,7 +25,7 @@ public class InternStaffing {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "intern_hiring_status_id", nullable = false)
-    private InternHiringStatus internHiringStatus;
+    private InternHiringStatusEntity internHiringStatus;
 
     @Column(name = "internship_workload")
     private Long internshipWorkload;

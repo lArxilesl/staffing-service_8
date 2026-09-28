@@ -7,7 +7,7 @@ public class InternStaffingSummaryResponse {
     private Long id;
     private Long employeeId;
     private String employeeSurname;
-    private String internHiringStatus;
+    private String internHiringStatusEntity;
     private Long internshipWorkload;
     private Long workload;
     private String extension;

@@ -16,12 +16,10 @@ public interface InternStaffingMapper {
 
     @Mapping(source = "employee.employeeId", target = "employeeId")
     @Mapping(source = "employee.surname", target = "employeeSurname")
-    @Mapping(source = "internHiringStatus.status", target = "internHiringStatus")
+    @Mapping(source = "internHiringStatus.status", target = "internHiringStatusEntity")
     InternStaffingSummaryResponse toSummaryResponse(InternStaffing staffing);
 
     InternStaffingResponse toResponse(InternStaffing staffing);
 
-    @Mapping(source = "employeeId", target = "employee.employeeId")
-    @Mapping(source = "internHiringStatusId", target = "internHiringStatus.id")
     InternStaffing toEntity(InternStaffingRequest internStaffingRequest);
 }

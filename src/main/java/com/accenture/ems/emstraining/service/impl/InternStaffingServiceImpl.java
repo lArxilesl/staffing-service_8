@@ -1,5 +1,7 @@
 package com.accenture.ems.emstraining.service.impl;
 
+import com.accenture.ems.emstraining.entity.Employee;
+import com.accenture.ems.emstraining.entity.InternHiringStatusEntity;
 import com.accenture.ems.emstraining.entity.InternStaffing;
 import com.accenture.ems.emstraining.exception.ResourceNotFoundException;
 import com.accenture.ems.emstraining.exception.StaffingHasProjectHistoryException;
@@ -64,17 +66,23 @@ public class InternStaffingServiceImpl implements InternStaffingService {
 
     @Override
     public InternStaffingResponse create(InternStaffingRequest internStaffingRequest) {
-        log.info("Request to create staffing");
-        if (!employeeRepository.existsById(internStaffingRequest.getEmployeeId())) {
-            log.warn("No Employee with id {} found", internStaffingRequest.getEmployeeId());
-            throw new ResourceNotFoundException(String.format("No Employee with id %d found", internStaffingRequest.getEmployeeId()));
-        }
-        if (!internHiringStatusRepository.existsById(internStaffingRequest.getInternHiringStatusId())) {
-            log.warn("No Hiring Status with id {} found", internStaffingRequest.getInternHiringStatusId());
-            throw new ResourceNotFoundException(String.format("No Hiring Status with id %d found", internStaffingRequest.getInternHiringStatusId()));
-        }
-        InternStaffing entity = internStaffingRepository.save(internStaffingMapper.toEntity(internStaffingRequest));
+        log.info("Request to create Intern Staffing : {}", internStaffingRequest);
 
-        return internStaffingMapper.toResponse(entity);
+        log.info("Checking if Employee {} exists", internStaffingRequest.getEmployeeId());
+        Employee employee = employeeRepository.findById(internStaffingRequest.getEmployeeId()).orElseThrow(() -> {
+            log.warn("No Employee with id {} found", internStaffingRequest.getEmployeeId());
+            return new ResourceNotFoundException(String.format("No Employee with id %d found", internStaffingRequest.getEmployeeId()));
+        });
+        log.info("Checking if InternHiringStatus {} exists", internStaffingRequest.getInternHiringStatusId());
+        InternHiringStatusEntity status = internHiringStatusRepository.findById(internStaffingRequest.getInternHiringStatusId()).orElseThrow(() -> {
+            log.warn("No Hiring Status with id {} found", internStaffingRequest.getInternHiringStatusId());
+            return new ResourceNotFoundException(String.format("No Hiring Status with id %d found", internStaffingRequest.getInternHiringStatusId()));
+        });
+
+        InternStaffing entity = internStaffingMapper.toEntity(internStaffingRequest);
+        entity.setEmployee(employee);
+        entity.setInternHiringStatus(status);
+
+        return internStaffingMapper.toResponse(internStaffingRepository.save(entity));
     }
 }
