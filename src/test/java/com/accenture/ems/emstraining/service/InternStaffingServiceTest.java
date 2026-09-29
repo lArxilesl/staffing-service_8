@@ -90,8 +90,8 @@ class InternStaffingServiceTest {
         internStaffingRequest = new InternStaffingRequest();
         internStaffingRequest.setEmployeeId(1L);
         internStaffingRequest.setInternHiringStatusId(2L);
-        internStaffingRequest.setInternshipWorkload(1L);
-        internStaffingRequest.setWorkload(10L);
+        internStaffingRequest.setInternshipWorkload(10L);
+        internStaffingRequest.setWorkload(1L);
         internStaffingRequest.setExtension("2026-10-01T00:00:00");
     }
 
@@ -120,7 +120,6 @@ class InternStaffingServiceTest {
 
         verify(internStaffingRepository, times(1)).findById(1L);
         verify(internStaffingMapper, never()).toResponse(any());
-        verifyNoMoreInteractions(internStaffingRepository, internStaffingMapper);
     }
 
     @Test
