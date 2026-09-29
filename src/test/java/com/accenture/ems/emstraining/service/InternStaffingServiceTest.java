@@ -125,10 +125,13 @@ class InternStaffingServiceTest {
 
     @Test
     @DisplayName("getAll should return empty list when no staffings exist")
-    void getAllShouldReturnEmptyListWhenNoStaffings() {
+    void getAllShouldReturnEmptyListWhenNoStaffingsExist() {
         when(internStaffingRepository.findAll()).thenReturn(Collections.emptyList());
+        when(internStaffingMapper.toResponseList(Collections.emptyList())).thenReturn(Collections.emptyList());
 
         assertThat(internStaffingService.getAll()).isEmpty();
+
+        verify(internStaffingMapper, times(1)).toResponseList(Collections.emptyList());
     }
 
     @Test
@@ -154,6 +157,7 @@ class InternStaffingServiceTest {
         assertThat(result)
                 .containsAll(internStaffingsSummaryResponses)
                 .hasSize(2);
+
         verify(internStaffingMapper, times(1)).toResponseList(anyList());
     }
 
@@ -175,7 +179,9 @@ class InternStaffingServiceTest {
         when(internProjectHistoryRepository.existsByInternStaffingId(1L)).thenReturn(true);
 
         assertThatExceptionOfType(StaffingHasProjectHistoryException.class)
-                .isThrownBy(() -> internStaffingService.delete(1L));
+                .isThrownBy(() -> internStaffingService.delete(1L))
+                .withMessage("Cannot delete intern staffing with id: 1 because it has project history");
+
         verify(internStaffingRepository, never()).deleteById(1L);
     }
 
@@ -187,7 +193,9 @@ class InternStaffingServiceTest {
         assertThatThrownBy(() -> internStaffingService.delete(1L))
                 .isInstanceOf(ResourceNotFoundException.class)
                 .hasMessage("Intern Staffing with id: 1 not found");
+
         verify(internStaffingRepository, never()).deleteById(1L);
+        verify(internProjectHistoryRepository, never()).existsByInternStaffingId(any());
     }
 
     @Test
@@ -202,6 +210,8 @@ class InternStaffingServiceTest {
         InternStaffingResponse response = internStaffingService.create(internStaffingRequest);
 
         assertThat(response).isEqualTo(internStaffingResponse);
+        assertThat(internStaffing.getEmployee()).isEqualTo(employee);
+        assertThat(internStaffing.getInternHiringStatus()).isEqualTo(internHiringStatusEntity);
 
         verify(internStaffingRepository, times(1)).save(internStaffing);
     }
@@ -229,11 +239,11 @@ class InternStaffingServiceTest {
                 .isInstanceOf(ResourceNotFoundException.class)
                 .hasMessage("No Hiring Status with id 2 found");
 
-        verify(internHiringStatusRepository, never()).save(any());
+        verify(internStaffingRepository, never()).save(any());
     }
 
     @Test
-    @DisplayName("update shiould throw ResourceNotFoundException when staffing does not exist")
+    @DisplayName("update should throw ResourceNotFoundException when staffing does not exist")
     void updateShouldThrowResourceNotFoundExceptionWhenStaffingDoesNotExist() {
         InternStaffingPatchRequest patchRequest = new InternStaffingPatchRequest();
 
@@ -293,7 +303,7 @@ class InternStaffingServiceTest {
     }
 
     @Test
-    @DisplayName("update should throw ResourceNotFoundException when updated emoloyee does not exist")
+    @DisplayName("update should throw ResourceNotFoundException when updated employee does not exist")
     void updateShouldThrowResourceNotFoundExceptionWhenUpdatedEmployeeDoesNotExist() {
         InternStaffingPatchRequest patchRequest = new InternStaffingPatchRequest();
         patchRequest.setEmployeeId(42L);
