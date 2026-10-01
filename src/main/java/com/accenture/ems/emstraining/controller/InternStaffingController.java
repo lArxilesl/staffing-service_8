@@ -44,7 +44,7 @@ public class InternStaffingController {
         log.info("Delete intern Staffing with id: {}", id);
     }
 
-    @PostMapping()
+    @PostMapping
     public ResponseEntity<InternStaffingResponse> create(@Valid @RequestBody InternStaffingRequest internStaffingRequest) {
 
         return ResponseEntity.status(HttpStatus.CREATED).body(internStaffingService.create(internStaffingRequest));
