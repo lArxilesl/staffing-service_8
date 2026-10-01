@@ -10,6 +10,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -141,7 +143,7 @@ class InternStaffingControllerTest {
 
     @Test
     @DisplayName("POST /api/intern/staffing should return 201 Created when request is valid")
-    void createInternStaffingShouldReturn201CreatedWhenRequestIsValid() throws Exception {
+    void postInternStaffingShouldReturn201CreatedWhenRequestIsValid() throws Exception {
         InternStaffingRequest request = new InternStaffingRequest();
         request.setEmployeeId(1L);
         request.setInternHiringStatusId(2L);
@@ -164,7 +166,7 @@ class InternStaffingControllerTest {
 
     @Test
     @DisplayName("POST /api/intern/staffing should return 400 Bad Request when required fields are missing")
-    void createInternStaffingShouldReturn400BadRequestWhenRequiredFieldsAreMissing() throws Exception {
+    void postInternStaffingShouldReturn400BadRequestWhenRequiredFieldsAreMissing() throws Exception {
         InternStaffingRequest request = new InternStaffingRequest();
 
         mockMvc.perform(post(BASE_URL)
@@ -181,7 +183,7 @@ class InternStaffingControllerTest {
 
     @Test
     @DisplayName("POST /api/intern/staffing should return 404 Not Found when employee does not exist")
-    void createInternStaffingShouldReturn404NotFoundWhenEmployeeDoesNotExist() throws Exception {
+    void postInternStaffingShouldReturn404NotFoundWhenEmployeeDoesNotExist() throws Exception {
         InternStaffingRequest request = new InternStaffingRequest();
         request.setEmployeeId(42L);
         request.setInternHiringStatusId(2L);
@@ -199,9 +201,27 @@ class InternStaffingControllerTest {
 
     }
 
+    @DisplayName("POST /api/intern/staffing should return 400 Bad Request with malformed json")
+    @ParameterizedTest
+    @ValueSource(strings = {
+            "{\"name\":\"line1\nline2\"}", // raw newline
+            "{\"name\":\"Forty \"Two\"\"}", // unescaped quote
+            "{\"value\":\"\\x\"}", // invalid escape
+            "{\"name\":\"Forty\",}", // trailing comma
+            "{\"name\":\"Two\"" // missing closing brace
+    })
+    void postInternStaffingShouldReturn400BadRequestWithMalformedJson(String malformedJson) throws Exception {
+
+        mockMvc.perform(post(BASE_URL)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(malformedJson))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.status").value(400));
+    }
+
     @Test
     @DisplayName("PATCH /api/intern/staffing/{id} should return 200 OK and updated staffing")
-    void updateInternStaffingShouldReturn200AndUpdatedStaffingWhenRequestIsValid() throws Exception {
+    void patchInternStaffingShouldReturn200AndUpdatedStaffingWhenRequestIsValid() throws Exception {
         InternStaffingPatchRequest request = new InternStaffingPatchRequest();
         request.setWorkload(42L);
 
@@ -218,7 +238,7 @@ class InternStaffingControllerTest {
 
     @Test
     @DisplayName("PATCH /api/intern/staffing/{id} should return 404 Not Found when staffing does not exist")
-    void updateInternStaffingShouldReturn404NotFoundWhenStaffingDoesNotExist() throws Exception {
+    void patchInternStaffingShouldReturn404NotFoundWhenStaffingDoesNotExist() throws Exception {
         InternStaffingPatchRequest request = new InternStaffingPatchRequest();
 
         when(internStaffingService.update(42L, request))
@@ -234,7 +254,7 @@ class InternStaffingControllerTest {
 
     @Test
     @DisplayName("PATCH /api/intern/staffing/{id} should return 400 Bad Request when id is invalid")
-    void updateInternStaffingShouldReturn400BadRequestWhenIdIsInvalid() throws Exception {
+    void patchInternStaffingShouldReturn400BadRequestWhenIdIsInvalid() throws Exception {
         InternStaffingPatchRequest request = new InternStaffingPatchRequest();
 
         mockMvc.perform(patch(BASE_URL + "/{id}", "Forty Two")
@@ -245,6 +265,24 @@ class InternStaffingControllerTest {
                 .andExpect(jsonPath("$.message").value("Invalid value for id"));
 
         verifyZeroInteractions(internStaffingService);
+    }
+
+    @DisplayName("PATCH /api/intern/staffing should return 400 Bad Request with malformed json")
+    @ParameterizedTest
+    @ValueSource(strings = {
+            "{\"name\":\"line1\nline2\"}", // raw newline
+            "{\"name\":\"Forty \"Two\"\"}", // unescaped quote
+            "{\"value\":\"\\x\"}", // invalid escape
+            "{\"name\":\"Forty\",}", // trailing comma
+            "{\"name\":\"Two\"" // missing closing brace
+    })
+    void patchInternStaffingShouldReturn400BadRequestWithMalformedJson(String malformedJson) throws Exception {
+
+        mockMvc.perform(patch(BASE_URL + "/{id}", 1L)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(malformedJson))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.status").value(400));
     }
 
 
