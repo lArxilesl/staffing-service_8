@@ -18,6 +18,7 @@ import com.accenture.ems.emstraining.service.InternStaffingService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -52,6 +53,7 @@ public class InternStaffingServiceImpl implements InternStaffingService {
     }
 
     @Override
+    @Transactional
     public void delete(Long id) {
         log.info("Request to delete intern staffing {}", id);
         if (!internStaffingRepository.existsById(id)) {
@@ -62,11 +64,12 @@ public class InternStaffingServiceImpl implements InternStaffingService {
             log.warn("Cannot delete intern staffing with id: {} because it has project history", id);
             throw new StaffingHasProjectHistoryException(String.format("Cannot delete intern staffing with id: %d because it has project history", id));
         }
-        log.info("Intern staffing with id {} deleted", id);
         internStaffingRepository.deleteById(id);
+        log.info("Intern staffing with id {} deleted", id);
     }
 
     @Override
+    @Transactional
     public InternStaffingResponse create(InternStaffingRequest internStaffingRequest) {
         log.info("Request to create Intern Staffing : {}", internStaffingRequest);
 
@@ -89,6 +92,7 @@ public class InternStaffingServiceImpl implements InternStaffingService {
     }
 
     @Override
+    @Transactional
     public InternStaffingResponse update(Long id, @Valid InternStaffingPatchRequest internStaffingPatchRequest) {
         log.info("Request to update Intern Staffing {} with: {}", id, internStaffingPatchRequest);
 
@@ -117,7 +121,6 @@ public class InternStaffingServiceImpl implements InternStaffingService {
         }
 
         internStaffingMapper.updateStaffing(internStaffingPatchRequest, staffing);
-
 
         return internStaffingMapper.toResponse(internStaffingRepository.save(staffing));
     }
