@@ -128,6 +128,18 @@ class InternStaffingControllerTest {
     }
 
     @Test
+    @DisplayName("GET /api/intern/staffing/{id} should return 400 Bad Request when id is invalid")
+    void getInternStaffingShouldReturn400BadRequestWhenIdIsInvalid() throws Exception {
+
+        mockMvc.perform(get(BASE_URL + "/{id}", "Forty Two"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.status").value(400))
+                .andExpect(jsonPath("$.message").value("Invalid value for id"));
+
+        verifyZeroInteractions(internStaffingService);
+    }
+
+    @Test
     @DisplayName("POST /api/intern/staffing should return 201 Created when request is valid")
     void createInternStaffingShouldReturn201CreatedWhenRequestIsValid() throws Exception {
         InternStaffingRequest request = new InternStaffingRequest();
@@ -221,6 +233,22 @@ class InternStaffingControllerTest {
     }
 
     @Test
+    @DisplayName("PATCH /api/intern/staffing/{id} should return 400 Bad Request when id is invalid")
+    void updateInternStaffingShouldReturn400BadRequestWhenIdIsInvalid() throws Exception {
+        InternStaffingPatchRequest request = new InternStaffingPatchRequest();
+
+        mockMvc.perform(patch(BASE_URL + "/{id}", "Forty Two")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.status").value(400))
+                .andExpect(jsonPath("$.message").value("Invalid value for id"));
+
+        verifyZeroInteractions(internStaffingService);
+    }
+
+
+    @Test
     @DisplayName("DELETE /api/intern/staffing/{id} should return 204 No Content when deleted")
     void deleteInternStaffingShouldReturn204NoContentWhenDeleted() throws Exception {
         doNothing().when(internStaffingService).delete(1L);
@@ -258,5 +286,17 @@ class InternStaffingControllerTest {
                 .andExpect(jsonPath("$.message").value("Cannot delete intern staffing with id: 42 because it has project history"));
 
         verify(internStaffingService, times(1)).delete(42L);
+    }
+
+    @Test
+    @DisplayName("DELETE /api/intern/staffing/{id} should return 400 Bad Request when id is invalid")
+    void deleteInternStaffingShouldReturn400BadRequestWhenIdIsInvalid() throws Exception {
+
+        mockMvc.perform(delete(BASE_URL + "/{id}", "Forty Two"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.status").value(400))
+                .andExpect(jsonPath("$.message").value("Invalid value for id"));
+
+        verifyZeroInteractions(internStaffingService);
     }
 }
