@@ -18,7 +18,6 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDateTime;
-import java.util.Arrays;
 import java.util.Collections;
 
 import static org.mockito.Mockito.*;
@@ -77,7 +76,7 @@ class InternStaffingControllerTest {
     @Test
     @DisplayName("GET /api/intern/staffing should return 200 OK and list of summary responses")
     void getInternStaffingShouldReturn200AndListOfSummaryResponses() throws Exception {
-        when(internStaffingService.getAll()).thenReturn(Arrays.asList(internStaffingSummaryResponse));
+        when(internStaffingService.getAll()).thenReturn(Collections.singletonList(internStaffingSummaryResponse));
 
         mockMvc.perform(get(BASE_URL))
                 .andExpect(status().isOk())
