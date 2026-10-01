@@ -198,7 +198,6 @@ class InternStaffingControllerTest {
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.status").value(404))
                 .andExpect(jsonPath("$.message").value("Intern Staffing with id: 42 not found"));
-
     }
 
     @DisplayName("POST /api/intern/staffing should return 400 Bad Request with malformed json")
@@ -217,6 +216,28 @@ class InternStaffingControllerTest {
                         .content(malformedJson))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.status").value(400));
+
+        verifyZeroInteractions(internStaffingService);
+    }
+
+    @Test
+    @DisplayName("POST /api/intern/staffing should return 400 Bad Request when date format invalid")
+    void postInternStaffingShouldReturn400BadRequestWhenDateFormatInvalid() throws Exception {
+        String requestJson = "{\n" +
+                             "  \"employeeId\": 1,\n" +
+                             "  \"internHiringStatusId\": 1,\n" +
+                             "  \"internshipWorkload\": 1,\n" +
+                             "  \"workload\": 10,\n" +
+                             "  \"extension\": \"M-10-21T00:00:00\"\n" +
+                             "}\n";
+
+        mockMvc.perform(post(BASE_URL)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestJson))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.status").value(400));
+
+        verifyZeroInteractions(internStaffingService);
     }
 
     @Test
@@ -283,8 +304,29 @@ class InternStaffingControllerTest {
                         .content(malformedJson))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.status").value(400));
+
+        verifyZeroInteractions(internStaffingService);
     }
 
+    @Test
+    @DisplayName("PATCH /api/intern/staffing should return 400 Bad Request when date format invalid")
+    void patchInternStaffingShouldReturn400BadRequestWhenDateFormatInvalid() throws Exception {
+        String requestJson = "{\n" +
+                             "  \"employeeId\": 1,\n" +
+                             "  \"internHiringStatusId\": 1,\n" +
+                             "  \"internshipWorkload\": 1,\n" +
+                             "  \"workload\": 10,\n" +
+                             "  \"extension\": \"M-10-21T00:00:00\"\n" +
+                             "}\n";
+
+        mockMvc.perform(patch(BASE_URL + "/{id}", 1L)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestJson))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.status").value(400));
+
+        verifyZeroInteractions(internStaffingService);
+    }
 
     @Test
     @DisplayName("DELETE /api/intern/staffing/{id} should return 204 No Content when deleted")
