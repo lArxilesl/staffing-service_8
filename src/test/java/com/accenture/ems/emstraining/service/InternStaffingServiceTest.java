@@ -263,6 +263,9 @@ class InternStaffingServiceTest {
         InternStaffingPatchRequest patchRequest = new InternStaffingPatchRequest();
         patchRequest.setEmployeeId(1L);
         patchRequest.setInternHiringStatusId(2L);
+        patchRequest.setWorkload(1L);
+        patchRequest.setInternshipWorkload(10L);
+        patchRequest.setExtension("2026-10-01T00:00:00");
 
         when(internStaffingRepository.findById(1L)).thenReturn(Optional.of(internStaffing));
         when(employeeRepository.findById(1L)).thenReturn(Optional.of(employee));
@@ -273,8 +276,11 @@ class InternStaffingServiceTest {
         InternStaffingResponse response = internStaffingService.update(1L, patchRequest);
 
         assertThat(response).isEqualTo(internStaffingResponse);
-        assertThat(internStaffing.getEmployee()).isEqualTo(employee);
-        assertThat(internStaffing.getInternHiringStatus()).isEqualTo(internHiringStatusEntity);
+        assertThat(response.getEmployee()).isEqualTo(employeeResponse);
+        assertThat(response.getInternHiringStatus()).isEqualTo(internHiringStatusResponse);
+        assertThat(response.getWorkload()).isEqualTo(1L);
+        assertThat(response.getInternshipWorkload()).isEqualTo(10L);
+        assertThat(response.getExtension()).isEqualTo("2026-10-01T00:00:00");
 
         verify(internStaffingMapper, times(1)).updateStaffing(patchRequest, internStaffing);
         verify(internStaffingRepository, times(1)).save(internStaffing);
