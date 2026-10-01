@@ -17,6 +17,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Collections;
 
@@ -60,14 +61,14 @@ class InternStaffingControllerTest {
         internStaffingResponse.setInternHiringStatus(statusResponse);
         internStaffingResponse.setInternshipWorkload(1L);
         internStaffingResponse.setWorkload(10L);
-        internStaffingResponse.setExtension("2026-10-01T00:00:00");
+        internStaffingResponse.setExtension(LocalDateTime.parse("2026-10-01T00:00:00"));
 
         internStaffingSummaryResponse = new InternStaffingSummaryResponse();
         internStaffingSummaryResponse.setId(1L);
         internStaffingSummaryResponse.setEmployeeId(1L);
         internStaffingSummaryResponse.setFullName("Surname1, Name1");
         internStaffingSummaryResponse.setInternHiringStatus("Status2");
-        internStaffingSummaryResponse.setExtension("2026-10-01T00:00:00");
+        internStaffingSummaryResponse.setExtension(LocalDateTime.parse("2026-10-01T00:00:00"));
         internStaffingSummaryResponse.setInternshipWorkload(1L);
         internStaffingSummaryResponse.setWorkload(10L);
 
@@ -135,7 +136,7 @@ class InternStaffingControllerTest {
         request.setInternHiringStatusId(2L);
         request.setWorkload(1L);
         request.setInternshipWorkload(10L);
-        request.setExtension("2026-10-01T00:00:00");
+        request.setExtension(LocalDateTime.parse("2026-10-01T00:00:00"));
 
         when(internStaffingService.create(request)).thenReturn(internStaffingResponse);
 
@@ -173,7 +174,7 @@ class InternStaffingControllerTest {
         InternStaffingRequest request = new InternStaffingRequest();
         request.setEmployeeId(42L);
         request.setInternHiringStatusId(2L);
-        request.setExtension("2026-10-01T00:00:00");
+        request.setExtension(LocalDateTime.parse("2026-10-01T00:00:00"));
 
         when(internStaffingService.create(request))
                 .thenThrow(new ResourceNotFoundException("Intern Staffing with id: 42 not found"));

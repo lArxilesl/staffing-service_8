@@ -20,6 +20,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -83,7 +84,7 @@ class InternStaffingServiceTest {
         internStaffingResponse.setEmployee(employeeResponse);
         internStaffingResponse.setId(1L);
         internStaffingResponse.setInternHiringStatus(internHiringStatusResponse);
-        internStaffingResponse.setExtension("2026-10-01T00:00:00");
+        internStaffingResponse.setExtension(LocalDateTime.parse("2026-10-01T00:00:00"));
         internStaffingResponse.setInternshipWorkload(10L);
         internStaffingResponse.setWorkload(1L);
 
@@ -92,7 +93,7 @@ class InternStaffingServiceTest {
         internStaffingRequest.setInternHiringStatusId(2L);
         internStaffingRequest.setInternshipWorkload(10L);
         internStaffingRequest.setWorkload(1L);
-        internStaffingRequest.setExtension("2026-10-01T00:00:00");
+        internStaffingRequest.setExtension(LocalDateTime.parse("2026-10-01T00:00:00"));
     }
 
     @Test
@@ -265,7 +266,7 @@ class InternStaffingServiceTest {
         patchRequest.setInternHiringStatusId(2L);
         patchRequest.setWorkload(1L);
         patchRequest.setInternshipWorkload(10L);
-        patchRequest.setExtension("2026-10-01T00:00:00");
+        patchRequest.setExtension(LocalDateTime.parse("2026-10-01T00:00:00"));
 
         when(internStaffingRepository.findById(1L)).thenReturn(Optional.of(internStaffing));
         when(employeeRepository.findById(1L)).thenReturn(Optional.of(employee));

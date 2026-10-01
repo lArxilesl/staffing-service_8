@@ -2,8 +2,8 @@ package com.accenture.ems.emstraining.model;
 
 import lombok.Data;
 
-import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import java.time.LocalDateTime;
 
 @Data
 public class InternStaffingRequest {
@@ -17,6 +17,6 @@ public class InternStaffingRequest {
     private Long internshipWorkload;
     private Long workload;
 
-    @NotBlank
-    private String extension;
+    @NotNull(message = "Extension cannot be null")
+    private LocalDateTime extension;
 }

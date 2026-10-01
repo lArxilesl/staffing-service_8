@@ -2,6 +2,8 @@ package com.accenture.ems.emstraining.model;
 
 import lombok.Data;
 
+import java.time.LocalDateTime;
+
 @Data
 public class InternStaffingResponse {
 
@@ -10,5 +12,5 @@ public class InternStaffingResponse {
     private InternHiringStatusResponse internHiringStatus;
     private Long internshipWorkload;
     private Long workload;
-    private String extension;
+    private LocalDateTime extension;
 }
