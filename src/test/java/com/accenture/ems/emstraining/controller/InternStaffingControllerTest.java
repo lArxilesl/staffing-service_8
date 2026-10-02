@@ -255,6 +255,22 @@ class InternStaffingControllerTest {
     }
 
     @Test
+    @DisplayName("POST /api/intern/staffing shout return 400 Bad Request when workload is negative")
+    void postInternStaffingShouldReturn400BadRequestWhenWorkloadIsNegative() throws Exception {
+        InternStaffingPatchRequest request = new InternStaffingPatchRequest();
+        request.setWorkload(-1L);
+
+        mockMvc.perform(post(BASE_URL)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.status").value(400))
+                .andExpect(jsonPath("$.messages.workload").value("workload cannot be negative"));
+
+        verifyZeroInteractions(internStaffingService);
+    }
+
+    @Test
     @DisplayName("PATCH /api/intern/staffing/{id} should return 200 OK and updated staffing")
     void patchInternStaffingShouldReturn200AndUpdatedStaffingWhenRequestIsValid() throws Exception {
         InternStaffingPatchRequest request = new InternStaffingPatchRequest();
@@ -275,6 +291,7 @@ class InternStaffingControllerTest {
     @DisplayName("PATCH /api/intern/staffing/{id} should return 404 Not Found when staffing does not exist")
     void patchInternStaffingShouldReturn404NotFoundWhenStaffingDoesNotExist() throws Exception {
         InternStaffingPatchRequest request = new InternStaffingPatchRequest();
+        request.setEmployeeId(1L);
 
         when(internStaffingService.update(42L, request))
                 .thenThrow(new ResourceNotFoundException("Intern Staffing with id: 42 not found"));
@@ -302,7 +319,7 @@ class InternStaffingControllerTest {
         verifyZeroInteractions(internStaffingService);
     }
 
-    @DisplayName("PATCH /api/intern/staffing should return 400 Bad Request with malformed json")
+    @DisplayName("PATCH /api/intern/staffing/{id} should return 400 Bad Request with malformed json")
     @ParameterizedTest
     @ValueSource(strings = {
             "{\"name\":\"line1\nline2\"}", // raw newline
@@ -323,7 +340,7 @@ class InternStaffingControllerTest {
     }
 
     @Test
-    @DisplayName("PATCH /api/intern/staffing should return 400 Bad Request when date format invalid")
+    @DisplayName("PATCH /api/intern/staffing/{id} should return 400 Bad Request when date format invalid")
     void patchInternStaffingShouldReturn400BadRequestWhenDateFormatInvalid() throws Exception {
         String requestJson = "{\n" +
                 "  \"employeeId\": 1,\n" +
@@ -343,7 +360,7 @@ class InternStaffingControllerTest {
     }
 
     @Test
-    @DisplayName("PATCH /api/intern/staffing should return 400 Bad Request when empty request")
+    @DisplayName("PATCH /api/intern/staffing/{id} should return 400 Bad Request when empty request")
     void patchInternStaffingShouldReturn400BadRequestWhenEmptyRequest() throws Exception {
         String requestJson = "{}";
 
@@ -352,6 +369,22 @@ class InternStaffingControllerTest {
                         .content(requestJson))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.status").value(400));
+
+        verifyZeroInteractions(internStaffingService);
+    }
+
+    @Test
+    @DisplayName("PATCH /api/intern/staffing/{id} shout return 400 Bad Request when workload is negative")
+    void patchInternStaffingShouldReturn400BadRequestWhenWorkloadIsNegative() throws Exception {
+        InternStaffingPatchRequest request = new InternStaffingPatchRequest();
+        request.setWorkload(-1L);
+
+        mockMvc.perform(patch(BASE_URL + "/{id}", 1L)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.status").value(400))
+                .andExpect(jsonPath("$.messages.workload").value("workload cannot be negative"));
 
         verifyZeroInteractions(internStaffingService);
     }
