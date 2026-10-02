@@ -12,4 +12,12 @@ public class InternStaffingPatchRequest {
     private Long internshipWorkload;
     private Long workload;
     private LocalDateTime extension;
+
+    public boolean isEmpty() {
+        return employeeId == null
+                && internHiringStatusId == null
+                && internshipWorkload == null
+                && workload == null
+                && extension == null;
+    }
 }

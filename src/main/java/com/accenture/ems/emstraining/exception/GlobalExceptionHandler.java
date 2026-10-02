@@ -68,6 +68,17 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.CONFLICT).body(errorResponse);
     }
 
+    @ExceptionHandler(EmptyPatchRequestException.class)
+    public ResponseEntity<Map<String, Object>> handleEmptyPatchRequestException(EmptyPatchRequestException exception) {
+        Map<String, Object> errorResponse = new HashMap<>();
+        errorResponse.put("timestamp", LocalDateTime.now());
+        errorResponse.put("status", HttpStatus.BAD_REQUEST.value());
+        errorResponse.put("error", HttpStatus.BAD_REQUEST.getReasonPhrase());
+        errorResponse.put("message", exception.getMessage());
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
+    }
+
     @ExceptionHandler(DateTimeParseException.class)
     public ResponseEntity<Map<String, Object>> handleDateTimeParseException() {
         Map<String, Object> errorResponse = new HashMap<>();

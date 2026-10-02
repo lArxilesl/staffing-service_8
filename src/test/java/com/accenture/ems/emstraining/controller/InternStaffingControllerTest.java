@@ -224,12 +224,26 @@ class InternStaffingControllerTest {
     @DisplayName("POST /api/intern/staffing should return 400 Bad Request when date format invalid")
     void postInternStaffingShouldReturn400BadRequestWhenDateFormatInvalid() throws Exception {
         String requestJson = "{\n" +
-                             "  \"employeeId\": 1,\n" +
-                             "  \"internHiringStatusId\": 1,\n" +
-                             "  \"internshipWorkload\": 1,\n" +
-                             "  \"workload\": 10,\n" +
-                             "  \"extension\": \"M-10-21T00:00:00\"\n" +
-                             "}\n";
+                "  \"employeeId\": 1,\n" +
+                "  \"internHiringStatusId\": 1,\n" +
+                "  \"internshipWorkload\": 1,\n" +
+                "  \"workload\": 10,\n" +
+                "  \"extension\": \"M-10-21T00:00:00\"\n" +
+                "}\n";
+
+        mockMvc.perform(post(BASE_URL)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestJson))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.status").value(400));
+
+        verifyZeroInteractions(internStaffingService);
+    }
+
+    @Test
+    @DisplayName("POST /api/intern/staffing should return 400 Bad Request when empty request")
+    void postInternStaffingShouldReturn400BadRequestWhenEmptyRequest() throws Exception {
+        String requestJson = "{}";
 
         mockMvc.perform(post(BASE_URL)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -312,12 +326,26 @@ class InternStaffingControllerTest {
     @DisplayName("PATCH /api/intern/staffing should return 400 Bad Request when date format invalid")
     void patchInternStaffingShouldReturn400BadRequestWhenDateFormatInvalid() throws Exception {
         String requestJson = "{\n" +
-                             "  \"employeeId\": 1,\n" +
-                             "  \"internHiringStatusId\": 1,\n" +
-                             "  \"internshipWorkload\": 1,\n" +
-                             "  \"workload\": 10,\n" +
-                             "  \"extension\": \"M-10-21T00:00:00\"\n" +
-                             "}\n";
+                "  \"employeeId\": 1,\n" +
+                "  \"internHiringStatusId\": 1,\n" +
+                "  \"internshipWorkload\": 1,\n" +
+                "  \"workload\": 10,\n" +
+                "  \"extension\": \"M-10-21T00:00:00\"\n" +
+                "}\n";
+
+        mockMvc.perform(patch(BASE_URL + "/{id}", 1L)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestJson))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.status").value(400));
+
+        verifyZeroInteractions(internStaffingService);
+    }
+
+    @Test
+    @DisplayName("PATCH /api/intern/staffing should return 400 Bad Request when empty request")
+    void patchInternStaffingShouldReturn400BadRequestWhenEmptyRequest() throws Exception {
+        String requestJson = "{}";
 
         mockMvc.perform(patch(BASE_URL + "/{id}", 1L)
                         .contentType(MediaType.APPLICATION_JSON)
