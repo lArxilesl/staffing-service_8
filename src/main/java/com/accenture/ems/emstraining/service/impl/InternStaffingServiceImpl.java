@@ -20,7 +20,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.validation.Valid;
 import java.util.List;
 
 @Service
@@ -93,7 +92,7 @@ public class InternStaffingServiceImpl implements InternStaffingService {
 
     @Override
     @Transactional
-    public InternStaffingResponse update(Long id, @Valid InternStaffingPatchRequest internStaffingPatchRequest) {
+    public InternStaffingResponse update(Long id, InternStaffingPatchRequest internStaffingPatchRequest) {
         log.info("Request to update Intern Staffing {} with: {}", id, internStaffingPatchRequest);
 
         log.info("Checking if Staffing {} exists", id);
