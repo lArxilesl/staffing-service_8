@@ -229,7 +229,7 @@ class InternStaffingControllerTest {
                 "  \"internHiringStatusId\": 1,\n" +
                 "  \"internshipWorkload\": 1,\n" +
                 "  \"workload\": 10,\n" +
-                "  \"extension\": \"M-10-21T00:00:00\"\n" +
+                "  \"extension\": \"2026-02-30T00:00:00\"\n" +
                 "}\n";
 
         mockMvc.perform(post(BASE_URL)
@@ -353,7 +353,7 @@ class InternStaffingControllerTest {
                 "  \"internHiringStatusId\": 1,\n" +
                 "  \"internshipWorkload\": 1,\n" +
                 "  \"workload\": 10,\n" +
-                "  \"extension\": \"M-10-21T00:00:00\"\n" +
+                "  \"extension\": \"2026-02-30T00:00:00\"\n" +
                 "}\n";
 
         mockMvc.perform(patch(BASE_URL + "/{id}", 1L)
