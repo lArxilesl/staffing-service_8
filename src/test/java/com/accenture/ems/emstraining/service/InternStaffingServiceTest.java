@@ -251,7 +251,7 @@ class InternStaffingServiceTest {
 
         assertThatThrownBy(() -> internStaffingService.update(1L, patchRequest))
                 .isInstanceOf(ResourceNotFoundException.class)
-                .hasMessage("Intern Staffing with id 1 not found");
+                .hasMessage("Intern Staffing with id: 1 not found");
 
         verify(internStaffingRepository, never()).save(any());
         verify(internHiringStatusRepository, never()).findById(any());

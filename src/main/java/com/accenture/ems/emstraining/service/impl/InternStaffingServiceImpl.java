@@ -46,7 +46,7 @@ public class InternStaffingServiceImpl implements InternStaffingService {
                 .map(internStaffingMapper::toResponse)
                 .orElseThrow(() ->
                 {
-                    log.warn("Intern Staffing with id {} not found", id);
+                    log.warn("Intern Staffing with id: {} not found", id);
                     return new ResourceNotFoundException(String.format("Intern Staffing with id: %d not found", id));
                 });
     }
@@ -56,7 +56,7 @@ public class InternStaffingServiceImpl implements InternStaffingService {
     public void delete(Long id) {
         log.info("Request to delete intern staffing {}", id);
         if (!internStaffingRepository.existsById(id)) {
-            log.warn("Intern Staffing with id {} does not exist", id);
+            log.warn("Intern Staffing with id: {} does not exist", id);
             throw new ResourceNotFoundException(String.format("Intern Staffing with id: %d not found", id));
         }
         if (internProjectHistoryRepository.existsByInternStaffingId(id)) {
@@ -64,7 +64,7 @@ public class InternStaffingServiceImpl implements InternStaffingService {
             throw new StaffingHasProjectHistoryException(String.format("Cannot delete intern staffing with id: %d because it has project history", id));
         }
         internStaffingRepository.deleteById(id);
-        log.info("Intern staffing with id {} deleted", id);
+        log.info("Intern staffing with id: {} deleted", id);
     }
 
     @Override
@@ -97,8 +97,8 @@ public class InternStaffingServiceImpl implements InternStaffingService {
 
         log.info("Checking if Staffing {} exists", id);
         InternStaffing staffing = internStaffingRepository.findById(id).orElseThrow(() -> {
-            log.warn("No Staffing with id {} found", id);
-            return new ResourceNotFoundException(String.format("Intern Staffing with id %d not found", id));
+            log.warn("Intern Staffing with id: {} not found", id);
+            return new ResourceNotFoundException(String.format("Intern Staffing with id: %d not found", id));
         });
 
         if (internStaffingPatchRequest.getEmployeeId() != null) {

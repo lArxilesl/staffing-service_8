@@ -54,7 +54,7 @@ public class InternStaffingController {
     @PatchMapping("/{id}")
     public ResponseEntity<InternStaffingResponse> update(@PathVariable Long id, @Valid @RequestBody InternStaffingPatchRequest internStaffingPatchRequest) {
         if (internStaffingPatchRequest.isEmpty()) {
-            log.warn("Patch request for Intern Staffing with id {} contains no fields to update", id);
+            log.warn("Patch request for Intern Staffing with id: {} contains no fields to update", id);
             throw new EmptyPatchRequestException("Patch request must contain at least one field to update");
         }
         return ResponseEntity.ok(internStaffingService.update(id, internStaffingPatchRequest));
