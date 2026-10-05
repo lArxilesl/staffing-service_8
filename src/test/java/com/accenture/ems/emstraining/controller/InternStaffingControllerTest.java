@@ -60,8 +60,8 @@ class InternStaffingControllerTest {
         internStaffingResponse.setId(1L);
         internStaffingResponse.setEmployee(employeeResponse);
         internStaffingResponse.setInternHiringStatus(statusResponse);
-        internStaffingResponse.setInternshipWorkload(1L);
-        internStaffingResponse.setWorkload(10L);
+        internStaffingResponse.setInternshipWorkload(1);
+        internStaffingResponse.setWorkload(10);
         internStaffingResponse.setExtension(LocalDateTime.parse("2026-10-01T00:00:00"));
 
         internStaffingSummaryResponse = new InternStaffingSummaryResponse();
@@ -70,8 +70,8 @@ class InternStaffingControllerTest {
         internStaffingSummaryResponse.setFullName("Surname1, Name1");
         internStaffingSummaryResponse.setInternHiringStatus("Status2");
         internStaffingSummaryResponse.setExtension(LocalDateTime.parse("2026-10-01T00:00:00"));
-        internStaffingSummaryResponse.setInternshipWorkload(1L);
-        internStaffingSummaryResponse.setWorkload(10L);
+        internStaffingSummaryResponse.setInternshipWorkload(1);
+        internStaffingSummaryResponse.setWorkload(10);
 
     }
 
@@ -147,8 +147,8 @@ class InternStaffingControllerTest {
         InternStaffingRequest request = new InternStaffingRequest();
         request.setEmployeeId(1L);
         request.setInternHiringStatusId(2L);
-        request.setWorkload(1L);
-        request.setInternshipWorkload(10L);
+        request.setWorkload(1);
+        request.setInternshipWorkload(10);
         request.setExtension(LocalDateTime.parse("2026-10-01T00:00:00"));
 
         when(internStaffingService.create(request)).thenReturn(internStaffingResponse);
@@ -263,7 +263,7 @@ class InternStaffingControllerTest {
     @DisplayName("POST /api/intern/staffing shout return 400 Bad Request when workload is negative")
     void postInternStaffingShouldReturn400BadRequestWhenWorkloadIsNegative() throws Exception {
         InternStaffingPatchRequest request = new InternStaffingPatchRequest();
-        request.setWorkload(-1L);
+        request.setWorkload(-1);
 
         mockMvc.perform(post(BASE_URL)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -279,7 +279,7 @@ class InternStaffingControllerTest {
     @DisplayName("PATCH /api/intern/staffing/{id} should return 200 OK and updated staffing")
     void patchInternStaffingShouldReturn200AndUpdatedStaffingWhenRequestIsValid() throws Exception {
         InternStaffingPatchRequest request = new InternStaffingPatchRequest();
-        request.setWorkload(42L);
+        request.setWorkload(42);
 
         when(internStaffingService.update(1L, request)).thenReturn(internStaffingResponse);
 
@@ -385,7 +385,7 @@ class InternStaffingControllerTest {
     @DisplayName("PATCH /api/intern/staffing/{id} shout return 400 Bad Request when workload is negative")
     void patchInternStaffingShouldReturn400BadRequestWhenWorkloadIsNegative() throws Exception {
         InternStaffingPatchRequest request = new InternStaffingPatchRequest();
-        request.setWorkload(-1L);
+        request.setWorkload(-1);
 
         mockMvc.perform(patch(BASE_URL + "/{id}", 1L)
                         .contentType(MediaType.APPLICATION_JSON)

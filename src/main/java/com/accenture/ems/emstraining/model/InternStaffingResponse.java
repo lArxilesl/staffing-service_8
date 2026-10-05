@@ -10,7 +10,7 @@ public class InternStaffingResponse {
     private Long id;
     private EmployeeResponse employee;
     private InternHiringStatusResponse internHiringStatus;
-    private Long internshipWorkload;
-    private Long workload;
+    private Integer internshipWorkload;
+    private Integer workload;
     private LocalDateTime extension;
 }

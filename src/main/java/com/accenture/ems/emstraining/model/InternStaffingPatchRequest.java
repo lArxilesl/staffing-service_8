@@ -12,10 +12,10 @@ public class InternStaffingPatchRequest {
     private Long internHiringStatusId;
 
     @PositiveOrZero(message = "internshipWorkload cannot be negative")
-    private Long internshipWorkload;
+    private Integer internshipWorkload;
 
     @PositiveOrZero(message = "workload cannot be negative")
-    private Long workload;
+    private Integer workload;
 
     private LocalDateTime extension;
 

@@ -16,9 +16,9 @@ public class InternStaffingRequest {
     private Long internHiringStatusId;
 
     @PositiveOrZero(message = "internshipWorkload cannot be negative")
-    private Long internshipWorkload;
+    private Integer internshipWorkload;
     @PositiveOrZero(message = "workload cannot be negative")
-    private Long workload;
+    private Integer workload;
 
     @NotNull(message = "Extension cannot be null")
     private LocalDateTime extension;
