@@ -28,10 +28,10 @@ public class InternStaffing {
     private InternHiringStatusEntity internHiringStatus;
 
     @Column(name = "internship_workload")
-    private Long internshipWorkload;
+    private Integer internshipWorkload;
 
     @Column(name = "workload")
-    private Long workload;
+    private Integer workload;
 
     @Column(name = "extension", nullable = false)
     private LocalDateTime extension;
