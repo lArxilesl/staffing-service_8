@@ -10,8 +10,8 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 
 import javax.persistence.EntityNotFoundException;
 import java.text.MessageFormat;
+import java.time.DateTimeException;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeParseException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -83,7 +83,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<Map<String, Object>> handleHttpMessageNotReadableException(HttpMessageNotReadableException exception) {
         Map<String, Object> errorResponse = new HashMap<>();
 
-        String message = exception.getMostSpecificCause() instanceof DateTimeParseException
+        String message = exception.getMostSpecificCause() instanceof DateTimeException
                 ? "Invalid date format"
                 : "Malformed request json";
 
