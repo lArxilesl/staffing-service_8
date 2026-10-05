@@ -46,7 +46,7 @@ public class InternStaffingServiceImpl implements InternStaffingService {
                 .map(internStaffingMapper::toResponse)
                 .orElseThrow(() ->
                 {
-                    log.warn("No Intern Staffing with id {} found", id);
+                    log.warn("Intern Staffing with id {} not found", id);
                     return new ResourceNotFoundException(String.format("Intern Staffing with id: %d not found", id));
                 });
     }
@@ -98,7 +98,7 @@ public class InternStaffingServiceImpl implements InternStaffingService {
         log.info("Checking if Staffing {} exists", id);
         InternStaffing staffing = internStaffingRepository.findById(id).orElseThrow(() -> {
             log.warn("No Staffing with id {} found", id);
-            return new ResourceNotFoundException(String.format("No Staffing with id %d found", id));
+            return new ResourceNotFoundException(String.format("Intern Staffing with id %d not found", id));
         });
 
         if (internStaffingPatchRequest.getEmployeeId() != null) {
