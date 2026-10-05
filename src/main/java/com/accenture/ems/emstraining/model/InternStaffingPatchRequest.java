@@ -1,5 +1,6 @@
 package com.accenture.ems.emstraining.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 
 import javax.validation.constraints.PositiveOrZero;
@@ -19,6 +20,7 @@ public class InternStaffingPatchRequest {
 
     private LocalDateTime extension;
 
+    @JsonIgnore
     public boolean isEmpty() {
         return employeeId == null
                 && internHiringStatusId == null
