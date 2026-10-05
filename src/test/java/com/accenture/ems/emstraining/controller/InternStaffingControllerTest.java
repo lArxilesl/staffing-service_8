@@ -215,7 +215,8 @@ class InternStaffingControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(malformedJson))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.status").value(400));
+                .andExpect(jsonPath("$.status").value(400))
+                .andExpect(jsonPath("$.message").value("Malformed request json"));
 
         verifyZeroInteractions(internStaffingService);
     }
@@ -235,7 +236,8 @@ class InternStaffingControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestJson))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.status").value(400));
+                .andExpect(jsonPath("$.status").value(400))
+                .andExpect(jsonPath("$.message").value("Invalid date format"));
 
         verifyZeroInteractions(internStaffingService);
     }
@@ -249,7 +251,10 @@ class InternStaffingControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestJson))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.status").value(400));
+                .andExpect(jsonPath("$.status").value(400))
+                .andExpect(jsonPath("$.messages.extension").value("Extension cannot be null"))
+                .andExpect(jsonPath("$.messages.internHiringStatusId").value("must not be null"))
+                .andExpect(jsonPath("$.messages.employeeId").value("must not be null"));
 
         verifyZeroInteractions(internStaffingService);
     }
@@ -334,7 +339,8 @@ class InternStaffingControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(malformedJson))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.status").value(400));
+                .andExpect(jsonPath("$.status").value(400))
+                .andExpect(jsonPath("$.message").value("Malformed request json"));
 
         verifyZeroInteractions(internStaffingService);
     }
@@ -354,7 +360,8 @@ class InternStaffingControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestJson))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.status").value(400));
+                .andExpect(jsonPath("$.status").value(400))
+                .andExpect(jsonPath("$.message").value("Invalid date format"));
 
         verifyZeroInteractions(internStaffingService);
     }
@@ -368,7 +375,8 @@ class InternStaffingControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestJson))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.status").value(400));
+                .andExpect(jsonPath("$.status").value(400))
+                .andExpect(jsonPath("$.message").value("Patch request must contain at least one field to update"));
 
         verifyZeroInteractions(internStaffingService);
     }
