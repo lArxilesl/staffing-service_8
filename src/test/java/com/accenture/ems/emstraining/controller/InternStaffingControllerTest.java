@@ -187,14 +187,14 @@ class InternStaffingControllerTest {
         request.setExtension(LocalDateTime.parse("2026-10-01T00:00:00"));
 
         when(internStaffingService.create(request))
-                .thenThrow(new ResourceNotFoundException("Intern Staffing with id: 42 not found"));
+                .thenThrow(new ResourceNotFoundException("Employee with id: 42 not found"));
 
         mockMvc.perform(post(BASE_URL)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.status").value(404))
-                .andExpect(jsonPath("$.message").value("Intern Staffing with id: 42 not found"));
+                .andExpect(jsonPath("$.message").value("Employee with id: 42 not found"));
     }
 
     @DisplayName("POST /api/intern/staffing should return 400 Bad Request with malformed json")
@@ -257,9 +257,12 @@ class InternStaffingControllerTest {
     }
 
     @Test
-    @DisplayName("POST /api/intern/staffing shout return 400 Bad Request when workload is negative")
+    @DisplayName("POST /api/intern/staffing should return 400 Bad Request when workload is negative")
     void postInternStaffingShouldReturn400BadRequestWhenWorkloadIsNegative() throws Exception {
-        InternStaffingPatchRequest request = new InternStaffingPatchRequest();
+        InternStaffingRequest request = new InternStaffingRequest();
+        request.setEmployeeId(1L);
+        request.setInternHiringStatusId(2L);
+        request.setExtension(LocalDateTime.parse("2026-10-01T00:00:00"));
         request.setWorkload(-1);
 
         mockMvc.perform(post(BASE_URL)
@@ -379,7 +382,7 @@ class InternStaffingControllerTest {
     }
 
     @Test
-    @DisplayName("PATCH /api/intern/staffing/{id} shout return 400 Bad Request when workload is negative")
+    @DisplayName("PATCH /api/intern/staffing/{id} should return 400 Bad Request when workload is negative")
     void patchInternStaffingShouldReturn400BadRequestWhenWorkloadIsNegative() throws Exception {
         InternStaffingPatchRequest request = new InternStaffingPatchRequest();
         request.setWorkload(-1);
@@ -397,8 +400,8 @@ class InternStaffingControllerTest {
     @Test
     @DisplayName("DELETE /api/intern/staffing/{id} should return 204 No Content when deleted")
     void deleteInternStaffingShouldReturn204NoContentWhenDeleted() throws Exception {
-        doNothing().when(internStaffingService).delete(1L);
         when(internStaffingService.existsById(1L)).thenReturn(true);
+
         mockMvc.perform(delete(BASE_URL + "/{id}", 1L))
                 .andExpect(status().isNoContent())
                 .andExpect(content().string(""));
@@ -409,13 +412,12 @@ class InternStaffingControllerTest {
     @Test
     @DisplayName("DELETE /api/intern/staffing/{id} should return 404 Not Found when staffing does not exist")
     void deleteInternStaffingShouldReturn404NotFoundWhenStaffingDoesNotExist() throws Exception {
-        doThrow(new ResourceNotFoundException("Intern Staffing with id: 42 not found"))
-                .when(internStaffingService).delete(42L);
+        when(internStaffingService.existsById(42L)).thenReturn(false);
 
         mockMvc.perform(delete(BASE_URL + "/{id}", 42L))
                 .andExpect(status().isNotFound());
 
-        verify(internStaffingService, times(0)).delete(42L);
+        verify(internStaffingService, never()).delete(42L);
     }
 
     @Test

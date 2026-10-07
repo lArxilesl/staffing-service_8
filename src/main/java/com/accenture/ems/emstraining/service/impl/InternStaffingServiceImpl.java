@@ -112,12 +112,12 @@ public class InternStaffingServiceImpl implements InternStaffingService {
     }
 
     private Employee findEmployeeById(Long employeeId) {
-        log.info("Checking if Employee with id {} exists", employeeId);
+        log.info("Checking if Employee with id: {} exists", employeeId);
         return employeeRepository
                 .findById(employeeId)
                 .orElseThrow(() -> {
-                    log.warn("No Employee with id {} found", employeeId);
-                    return new ResourceNotFoundException(String.format("Employee with id %d not found", employeeId));
+                    log.warn("No Employee with id: {} found", employeeId);
+                    return new ResourceNotFoundException(String.format("Employee with id: %d not found", employeeId));
                 });
     }
 
@@ -126,8 +126,8 @@ public class InternStaffingServiceImpl implements InternStaffingService {
         return internHiringStatusRepository
                 .findById(statusId)
                 .orElseThrow(() -> {
-                    log.warn("Intern Hiring Status with id {} not found", statusId);
-                    return new ResourceNotFoundException(String.format("Intern Hiring Status with id %d not found", statusId));
+                    log.warn("Intern Hiring Status with id: {} not found", statusId);
+                    return new ResourceNotFoundException(String.format("Intern Hiring Status with id: %d not found", statusId));
                 });
     }
 }
