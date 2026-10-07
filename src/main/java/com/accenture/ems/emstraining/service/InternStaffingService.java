@@ -6,11 +6,14 @@ import com.accenture.ems.emstraining.model.InternStaffingResponse;
 import com.accenture.ems.emstraining.model.InternStaffingSummaryResponse;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface InternStaffingService {
     List<InternStaffingSummaryResponse> getAll();
 
-    InternStaffingResponse getById(Long id);
+    Optional<InternStaffingResponse> getById(Long id);
+
+    boolean existsById(Long id);
 
     void delete(Long id);
 

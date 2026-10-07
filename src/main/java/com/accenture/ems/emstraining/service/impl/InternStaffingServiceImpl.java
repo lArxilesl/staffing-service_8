@@ -21,6 +21,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -33,32 +34,31 @@ public class InternStaffingServiceImpl implements InternStaffingService {
     private final InternHiringStatusRepository internHiringStatusRepository;
 
     @Override
+    @Transactional(readOnly = true)
     public List<InternStaffingSummaryResponse> getAll() {
         log.debug("Fetching all intern staffings");
         return internStaffingMapper.toResponseList(internStaffingRepository.findAll());
     }
 
     @Override
-    public InternStaffingResponse getById(Long id) {
+    @Transactional(readOnly = true)
+    public Optional<InternStaffingResponse> getById(Long id) {
         log.info("Request to find intern staffing {}", id);
         return internStaffingRepository
                 .findById(id)
-                .map(internStaffingMapper::toResponse)
-                .orElseThrow(() ->
-                {
-                    log.warn("Intern Staffing with id: {} not found", id);
-                    return new ResourceNotFoundException(String.format("Intern Staffing with id: %d not found", id));
-                });
+                .map(internStaffingMapper::toResponse);
+    }
+
+    @Override
+    public boolean existsById(Long id) {
+        return internStaffingRepository.existsById(id);
     }
 
     @Override
     @Transactional
     public void delete(Long id) {
         log.info("Request to delete intern staffing {}", id);
-        if (!internStaffingRepository.existsById(id)) {
-            log.warn("Intern Staffing with id: {} does not exist", id);
-            throw new ResourceNotFoundException(String.format("Intern Staffing with id: %d not found", id));
-        }
+
         if (internProjectHistoryRepository.existsByInternStaffingId(id)) {
             log.warn("Cannot delete intern staffing with id: {} because it has project history", id);
             throw new StaffingHasProjectHistoryException(String.format("Cannot delete intern staffing with id: %d because it has project history", id));

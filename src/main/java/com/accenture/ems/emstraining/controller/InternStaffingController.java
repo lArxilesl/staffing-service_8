@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @RestController
@@ -33,16 +34,27 @@ public class InternStaffingController {
     }
 
     @GetMapping("/{id}")
-    public InternStaffingResponse getById(@PathVariable Long id) {
+    public ResponseEntity<InternStaffingResponse> getById(@PathVariable Long id) {
+        Optional<InternStaffingResponse> result = internStaffingService.getById(id);
 
-        return internStaffingService.getById(id);
+        if (result.isPresent()) {
+            log.info("Returning intern Staffing with id: {}", id);
+            return ResponseEntity.ok(result.get());
+        } else {
+            log.warn("Intern Staffing with id: {} was not found", id);
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @DeleteMapping("/{id}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteById(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteById(@PathVariable Long id) {
+        if (!internStaffingService.existsById(id)) {
+            log.warn("Intern Staffing with id: {} was not found", id);
+            return ResponseEntity.notFound().build();
+        }
         internStaffingService.delete(id);
         log.info("Delete intern Staffing with id: {}", id);
+        return ResponseEntity.noContent().build();
     }
 
     @PostMapping

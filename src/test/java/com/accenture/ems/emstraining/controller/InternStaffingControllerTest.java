@@ -21,6 +21,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDateTime;
 import java.util.Collections;
+import java.util.Optional;
 
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -104,7 +105,7 @@ class InternStaffingControllerTest {
     @Test
     @DisplayName("GET /api/intern/staffing/{id} should return 200 OK and staffing response when staffing exists")
     void getInternStaffingShouldReturn200AndStaffingResponseWhenStaffingExists() throws Exception {
-        when(internStaffingService.getById(1L)).thenReturn(internStaffingResponse);
+        when(internStaffingService.getById(1L)).thenReturn(Optional.of(internStaffingResponse));
 
         mockMvc.perform(get(BASE_URL + "/{id}", 1L))
                 .andExpect(status().isOk())
@@ -118,13 +119,10 @@ class InternStaffingControllerTest {
     @Test
     @DisplayName("GET /api/intern/staffing/{id} should return 404 Not Found when staffing does not exist")
     void getInternStaffingShouldReturn404WhenStaffingDoesNotExist() throws Exception {
-        when(internStaffingService.getById(42L))
-                .thenThrow(new ResourceNotFoundException("Intern Staffing with id: 42 not found"));
+        when(internStaffingService.getById(42L)).thenReturn(Optional.empty());
 
         mockMvc.perform(get(BASE_URL + "/{id}", 42L))
-                .andExpect(status().isNotFound())
-                .andExpect(jsonPath("$.status").value(404))
-                .andExpect(jsonPath("$.message").value("Intern Staffing with id: 42 not found"));
+                .andExpect(status().isNotFound());
 
         verify(internStaffingService, times(1)).getById(42L);
     }
@@ -401,7 +399,7 @@ class InternStaffingControllerTest {
     @DisplayName("DELETE /api/intern/staffing/{id} should return 204 No Content when deleted")
     void deleteInternStaffingShouldReturn204NoContentWhenDeleted() throws Exception {
         doNothing().when(internStaffingService).delete(1L);
-
+        when(internStaffingService.existsById(1L)).thenReturn(true);
         mockMvc.perform(delete(BASE_URL + "/{id}", 1L))
                 .andExpect(status().isNoContent())
                 .andExpect(content().string(""));
@@ -416,11 +414,9 @@ class InternStaffingControllerTest {
                 .when(internStaffingService).delete(42L);
 
         mockMvc.perform(delete(BASE_URL + "/{id}", 42L))
-                .andExpect(status().isNotFound())
-                .andExpect(jsonPath("$.status").value(404))
-                .andExpect(jsonPath("$.message").value("Intern Staffing with id: 42 not found"));
+                .andExpect(status().isNotFound());
 
-        verify(internStaffingService, times(1)).delete(42L);
+        verify(internStaffingService, times(0)).delete(42L);
     }
 
     @Test
@@ -428,6 +424,7 @@ class InternStaffingControllerTest {
     void deleteInternStaffingShouldReturn409ConflictWhenStaffingHasProjectHistory() throws Exception {
         doThrow(new StaffingHasProjectHistoryException("Cannot delete intern staffing with id: 42 because it has project history"))
                 .when(internStaffingService).delete(42L);
+        when(internStaffingService.existsById(42L)).thenReturn(true);
 
         mockMvc.perform(delete(BASE_URL + "/{id}", 42L))
                 .andExpect(status().isConflict())
