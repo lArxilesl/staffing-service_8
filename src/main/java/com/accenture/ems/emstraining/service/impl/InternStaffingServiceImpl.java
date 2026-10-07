@@ -122,12 +122,12 @@ public class InternStaffingServiceImpl implements InternStaffingService {
     }
 
     private InternHiringStatusEntity findInternHiringStatusEntityById(Long statusId) {
-        log.info("Checking if InternHiringStatus {} exists", statusId);
+        log.info("Checking if Intern Hiring Status {} exists", statusId);
         return internHiringStatusRepository
                 .findById(statusId)
                 .orElseThrow(() -> {
-                    log.warn("No InternHiringStatus with id {} found", statusId);
-                    return new ResourceNotFoundException(String.format("InternHiringStatus with id %d not found", statusId));
+                    log.warn("Intern Hiring Status with id {} not found", statusId);
+                    return new ResourceNotFoundException(String.format("Intern Hiring Status with id %d not found", statusId));
                 });
     }
 }
