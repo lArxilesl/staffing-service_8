@@ -62,6 +62,8 @@ class InternStaffingServiceTest {
     void setUp() {
         internStaffing = new InternStaffing();
         internStaffing.setId(1L);
+        internStaffing.setEmployeeId(1L);
+        internStaffing.setInternHiringStatusId(2L);
 
         employee = new Employee();
         employee.setEmployeeId(1L);
@@ -100,7 +102,7 @@ class InternStaffingServiceTest {
     @DisplayName("getById Should return staffing response when ID exists")
     void getByIdShouldReturnStaffingWhenIdExists() {
         when(internStaffingRepository.findById(1L)).thenReturn(Optional.of(internStaffing));
-        when(internStaffingMapper.toResponse(internStaffing)).thenReturn(internStaffingResponse);
+        when(internStaffingMapper.toResponse(any(), any(), any())).thenReturn(internStaffingResponse);
 
         Optional<InternStaffingResponse> result = internStaffingService.getById(1L);
 
@@ -109,7 +111,6 @@ class InternStaffingServiceTest {
                 .contains(internStaffingResponse);
 
         verify(internStaffingRepository, times(1)).findById(1L);
-        verify(internStaffingMapper, times(1)).toResponse(internStaffing);
     }
 
     @Test
@@ -130,10 +131,8 @@ class InternStaffingServiceTest {
         internStaffing2.setId(2L);
         InternStaffingSummaryResponse internStaffingSummaryResponse = new InternStaffingSummaryResponse();
         internStaffingSummaryResponse.setId(1L);
-        internStaffingSummaryResponse.setFullName("Surname1, Name1");
         InternStaffingSummaryResponse internStaffingSummaryResponse2 = new InternStaffingSummaryResponse();
         internStaffingSummaryResponse2.setId(2L);
-        internStaffingSummaryResponse2.setFullName("Surname2, Name2");
 
         List<InternStaffing> internStaffings = Arrays.asList(internStaffing, internStaffing2);
         when(internStaffingRepository.findAll()).thenReturn(internStaffings);
@@ -179,13 +178,13 @@ class InternStaffingServiceTest {
         when(employeeRepository.findById(1L)).thenReturn(Optional.of(employee));
         when(internHiringStatusRepository.findById(2L)).thenReturn(Optional.of(internHiringStatusEntity));
         when(internStaffingMapper.toEntity(any(InternStaffingRequest.class))).thenReturn(internStaffing);
-        when(internStaffingMapper.toResponse(any(InternStaffing.class))).thenReturn(internStaffingResponse);
+        when(internStaffingMapper.toResponse(any(), any(), any())).thenReturn(internStaffingResponse);
 
         InternStaffingResponse response = internStaffingService.create(internStaffingRequest);
 
         assertThat(response).isEqualTo(internStaffingResponse);
-        assertThat(internStaffing.getEmployee()).isEqualTo(employee);
-        assertThat(internStaffing.getInternHiringStatus()).isEqualTo(internHiringStatusEntity);
+        assertThat(internStaffing.getEmployeeId()).isEqualTo(employee.getEmployeeId());
+        assertThat(internStaffing.getInternHiringStatusId()).isEqualTo(internHiringStatusEntity.getId());
 
         verify(internStaffingRepository, times(1)).save(internStaffing);
     }
@@ -197,7 +196,7 @@ class InternStaffingServiceTest {
 
         assertThatThrownBy(() -> internStaffingService.create(internStaffingRequest))
                 .isInstanceOf(ResourceNotFoundException.class)
-                .hasMessage("No Employee with id 1 found");
+                .hasMessage("Employee with id 1 not found");
 
         verify(internHiringStatusRepository, never()).findById(any());
         verify(internStaffingRepository, never()).save(any());
@@ -211,7 +210,7 @@ class InternStaffingServiceTest {
 
         assertThatThrownBy(() -> internStaffingService.create(internStaffingRequest))
                 .isInstanceOf(ResourceNotFoundException.class)
-                .hasMessage("No Hiring Status with id 2 found");
+                .hasMessage("InternHiringStatus with id 2 not found");
 
         verify(internStaffingRepository, never()).save(any());
     }
@@ -246,7 +245,7 @@ class InternStaffingServiceTest {
         when(employeeRepository.findById(1L)).thenReturn(Optional.of(employee));
         when(internHiringStatusRepository.findById(2L)).thenReturn(Optional.of(internHiringStatusEntity));
         when(internStaffingRepository.save(internStaffing)).thenReturn(internStaffing);
-        when(internStaffingMapper.toResponse(internStaffing)).thenReturn(internStaffingResponse);
+        when(internStaffingMapper.toResponse(any(), any(), any())).thenReturn(internStaffingResponse);
 
         InternStaffingResponse response = internStaffingService.update(1L, patchRequest);
 
@@ -270,7 +269,7 @@ class InternStaffingServiceTest {
 
         when(internStaffingRepository.findById(1L)).thenReturn(Optional.of(internStaffing));
         when(internStaffingRepository.save(internStaffing)).thenReturn(internStaffing);
-        when(internStaffingMapper.toResponse(internStaffing)).thenReturn(internStaffingResponse);
+        when(internStaffingMapper.toResponse(any(), any(), any())).thenReturn(internStaffingResponse);
 
         InternStaffingResponse response = internStaffingService.update(1L, patchRequest);
 
@@ -293,7 +292,7 @@ class InternStaffingServiceTest {
 
         assertThatThrownBy(() -> internStaffingService.update(1L, patchRequest))
                 .isInstanceOf(ResourceNotFoundException.class)
-                .hasMessage("No Employee with id 42 found");
+                .hasMessage("Employee with id 42 not found");
 
         verify(internStaffingRepository, never()).save(any());
     }

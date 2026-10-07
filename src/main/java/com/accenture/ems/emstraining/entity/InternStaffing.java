@@ -19,13 +19,11 @@ public class InternStaffing {
     @Column(name = "id")
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "employee_id", nullable = false)
-    private Employee employee;
+    @Column(name = "employee_id", nullable = false)
+    private Long employeeId;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "intern_hiring_status_id", nullable = false)
-    private InternHiringStatusEntity internHiringStatus;
+    @Column(name = "intern_hiring_status_id", nullable = false)
+    private Long internHiringStatusId;
 
     @Column(name = "internship_workload")
     private Integer internshipWorkload;

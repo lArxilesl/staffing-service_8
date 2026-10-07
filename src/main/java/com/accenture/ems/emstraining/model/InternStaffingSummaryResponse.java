@@ -8,8 +8,7 @@ import java.time.LocalDateTime;
 public class InternStaffingSummaryResponse {
     private Long id;
     private Long employeeId;
-    private String fullName;
-    private String internHiringStatus;
+    private Long internHiringStatusId;
     private Integer internshipWorkload;
     private Integer workload;
     private LocalDateTime extension;

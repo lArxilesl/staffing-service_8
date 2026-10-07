@@ -68,8 +68,7 @@ class InternStaffingControllerTest {
         internStaffingSummaryResponse = new InternStaffingSummaryResponse();
         internStaffingSummaryResponse.setId(1L);
         internStaffingSummaryResponse.setEmployeeId(1L);
-        internStaffingSummaryResponse.setFullName("Surname1, Name1");
-        internStaffingSummaryResponse.setInternHiringStatus("Status2");
+        internStaffingSummaryResponse.setInternHiringStatusId(2L);
         internStaffingSummaryResponse.setExtension(LocalDateTime.parse("2026-10-01T00:00:00"));
         internStaffingSummaryResponse.setInternshipWorkload(1);
         internStaffingSummaryResponse.setWorkload(10);
@@ -84,7 +83,7 @@ class InternStaffingControllerTest {
         mockMvc.perform(get(BASE_URL))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].id").value(1L))
-                .andExpect(jsonPath("$[0].fullName").value("Surname1, Name1"));
+                .andExpect(jsonPath("$[0].employeeId").value(1L));
 
         verify(internStaffingService, times(1)).getAll();
     }
