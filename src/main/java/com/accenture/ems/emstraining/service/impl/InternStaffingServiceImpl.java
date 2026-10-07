@@ -96,12 +96,12 @@ public class InternStaffingServiceImpl implements InternStaffingService {
             return new ResourceNotFoundException(String.format("Intern Staffing with id: %d not found", id));
         });
 
-        Employee employee = findEmployeeById((internStaffingPatchRequest.getEmployeeId()) != null
+        Employee employee = findEmployeeById(internStaffingPatchRequest.getEmployeeId() != null
                 ? internStaffingPatchRequest.getEmployeeId()
                 : staffing.getEmployeeId());
         staffing.setEmployeeId(employee.getEmployeeId());
 
-        InternHiringStatusEntity status = findInternHiringStatusEntityById((internStaffingPatchRequest.getInternHiringStatusId()) != null
+        InternHiringStatusEntity status = findInternHiringStatusEntityById(internStaffingPatchRequest.getInternHiringStatusId() != null
                 ? internStaffingPatchRequest.getInternHiringStatusId()
                 : staffing.getInternHiringStatusId());
         staffing.setInternHiringStatusId(status.getId());

@@ -124,7 +124,7 @@ class InternStaffingServiceTest {
 
         assertThat(result).isEmpty();
 
-        verify(employeeRepository, never()).findById(42L);
+        verify(employeeRepository, never()).findById(any());
         verify(internHiringStatusRepository, never()).findById(any());
         verify(internStaffingMapper, never()).toResponse(any(), any(), any());
     }
@@ -250,8 +250,8 @@ class InternStaffingServiceTest {
     }
 
     @Test
-    @DisplayName("update should update all fields when existing employee and status ID provided")
-    void updateShouldUpdateAllFieldsWhenExistingEmployeeAndStatusIDProvided() {
+    @DisplayName("update should change employee and status when new ID provided")
+    void updateShouldChangeEmployeeAndStatusWhenNewIDProvided() {
         Employee newEmployee = new Employee();
         newEmployee.setEmployeeId(42L);
         InternHiringStatusEntity newStatus = new InternHiringStatusEntity();
@@ -296,8 +296,9 @@ class InternStaffingServiceTest {
         assertThat(internStaffing.getInternHiringStatusId()).isEqualTo(2L);
 
         verify(internStaffingMapper, times(1)).updateStaffing(patchRequest, internStaffing);
-        verify(employeeRepository, times(1)).findById(any());
-        verify(internHiringStatusRepository, times(1)).findById(any());
+        verify(employeeRepository, times(1)).findById(1L);
+        verify(internHiringStatusRepository, times(1)).findById(2L);
+        verify(internStaffingRepository, times(1)).save(internStaffing);
     }
 
     @Test
