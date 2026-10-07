@@ -130,10 +130,8 @@ class InternStaffingServiceTest {
         internStaffing2.setId(2L);
         InternStaffingSummaryResponse internStaffingSummaryResponse = new InternStaffingSummaryResponse();
         internStaffingSummaryResponse.setId(1L);
-        internStaffingSummaryResponse.setFullName("Surname1, Name1");
         InternStaffingSummaryResponse internStaffingSummaryResponse2 = new InternStaffingSummaryResponse();
         internStaffingSummaryResponse2.setId(2L);
-        internStaffingSummaryResponse2.setFullName("Surname2, Name2");
 
         List<InternStaffing> internStaffings = Arrays.asList(internStaffing, internStaffing2);
         when(internStaffingRepository.findAll()).thenReturn(internStaffings);
@@ -184,8 +182,8 @@ class InternStaffingServiceTest {
         InternStaffingResponse response = internStaffingService.create(internStaffingRequest);
 
         assertThat(response).isEqualTo(internStaffingResponse);
-        assertThat(internStaffing.getEmployee()).isEqualTo(employee);
-        assertThat(internStaffing.getInternHiringStatus()).isEqualTo(internHiringStatusEntity);
+        assertThat(internStaffing.getEmployeeId()).isEqualTo(employee.getEmployeeId());
+        assertThat(internStaffing.getInternHiringStatusId()).isEqualTo(internHiringStatusEntity.getId());
 
         verify(internStaffingRepository, times(1)).save(internStaffing);
     }

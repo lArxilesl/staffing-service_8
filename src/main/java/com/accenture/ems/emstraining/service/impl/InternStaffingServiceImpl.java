@@ -36,7 +36,7 @@ public class InternStaffingServiceImpl implements InternStaffingService {
     @Override
     @Transactional(readOnly = true)
     public List<InternStaffingSummaryResponse> getAll() {
-        log.debug("Fetching all intern staffings");
+        log.info("Fetching all intern staffings");
         return internStaffingMapper.toResponseList(internStaffingRepository.findAll());
     }
 
@@ -84,8 +84,8 @@ public class InternStaffingServiceImpl implements InternStaffingService {
         });
 
         InternStaffing entity = internStaffingMapper.toEntity(internStaffingRequest);
-        entity.setEmployee(employee);
-        entity.setInternHiringStatus(status);
+        entity.setEmployeeId(employee.getEmployeeId());
+        entity.setInternHiringStatusId(status.getId());
 
         return internStaffingMapper.toResponse(internStaffingRepository.save(entity));
     }
@@ -107,7 +107,7 @@ public class InternStaffingServiceImpl implements InternStaffingService {
                 log.warn("No Employee with id {} found", internStaffingPatchRequest.getEmployeeId());
                 return new ResourceNotFoundException(String.format("No Employee with id %d found", internStaffingPatchRequest.getEmployeeId()));
             });
-            staffing.setEmployee(employee);
+            staffing.setEmployeeId(employee.getEmployeeId());
         }
 
         if (internStaffingPatchRequest.getInternHiringStatusId() != null) {
@@ -116,7 +116,7 @@ public class InternStaffingServiceImpl implements InternStaffingService {
                 log.warn("No Hiring Status with id {} found", internStaffingPatchRequest.getInternHiringStatusId());
                 return new ResourceNotFoundException(String.format("No Hiring Status with id %d found", internStaffingPatchRequest.getInternHiringStatusId()));
             });
-            staffing.setInternHiringStatus(status);
+            staffing.setInternHiringStatusId(status.getId());
         }
 
         internStaffingMapper.updateStaffing(internStaffingPatchRequest, staffing);
