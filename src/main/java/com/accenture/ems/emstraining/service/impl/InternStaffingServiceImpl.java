@@ -73,7 +73,7 @@ public class InternStaffingServiceImpl implements InternStaffingService {
     @Override
     @Transactional
     public InternStaffingResponse create(InternStaffingRequest internStaffingRequest) {
-        log.info("Request to create Intern Staffing : {}", internStaffingRequest);
+        log.info("Request to create new Intern Staffing");
 
         Employee employee = findEmployeeById(internStaffingRequest.getEmployeeId());
         InternHiringStatusEntity status = findInternHiringStatusEntityById(internStaffingRequest.getInternHiringStatusId());
@@ -82,13 +82,15 @@ public class InternStaffingServiceImpl implements InternStaffingService {
         entity.setEmployeeId(employee.getEmployeeId());
         entity.setInternHiringStatusId(status.getId());
 
-        return internStaffingMapper.toResponse(internStaffingRepository.save(entity), employee, status);
+        InternStaffing savedEntity = internStaffingRepository.save(entity);
+        log.info("Intern Staffing with id: {} created", savedEntity.getId());
+        return internStaffingMapper.toResponse(savedEntity, employee, status);
     }
 
     @Override
     @Transactional
     public InternStaffingResponse update(Long id, InternStaffingPatchRequest internStaffingPatchRequest) {
-        log.info("Request to update Intern Staffing {} with: {}", id, internStaffingPatchRequest);
+        log.info("Request to update Intern Staffing with id: {}", id);
 
         log.info("Checking if Staffing {} exists", id);
         InternStaffing staffing = internStaffingRepository.findById(id).orElseThrow(() -> {
@@ -108,7 +110,9 @@ public class InternStaffingServiceImpl implements InternStaffingService {
 
         internStaffingMapper.updateStaffing(internStaffingPatchRequest, staffing);
 
-        return internStaffingMapper.toResponse(internStaffingRepository.save(staffing), employee, status);
+        InternStaffing updatedEntity = internStaffingRepository.save(staffing);
+        log.info("Intern Staffing with id: {} updated", updatedEntity.getId());
+        return internStaffingMapper.toResponse(updatedEntity, employee, status);
     }
 
     private Employee findEmployeeById(Long employeeId) {
