@@ -19,8 +19,6 @@ public interface InternStaffingMapper {
     InternStaffingSummaryResponse toSummaryResponse(InternStaffing staffing);
 
     @Mapping(source = "staffing.id", target = "id")
-    @Mapping(source = "employee", target = "employee")
-    @Mapping(source = "internHiringStatus", target = "internHiringStatus")
     InternStaffingResponse toResponse(InternStaffing staffing, Employee employee, InternHiringStatusEntity internHiringStatus);
 
     @Mapping(target = "id", ignore = true)
