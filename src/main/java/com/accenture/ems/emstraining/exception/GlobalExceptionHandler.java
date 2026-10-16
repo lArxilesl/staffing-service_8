@@ -20,13 +20,8 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler({ResourceNotFoundException.class, EntityNotFoundException.class})
     public ResponseEntity<Map<String, Object>> handleNotFoundException(RuntimeException exception) {
-        Map<String, Object> errorResponse = new HashMap<>();
-        errorResponse.put("timestamp", LocalDateTime.now());
-        errorResponse.put("status", HttpStatus.NOT_FOUND.value());
-        errorResponse.put("error", HttpStatus.NOT_FOUND.getReasonPhrase());
-        errorResponse.put("message", exception.getMessage());
 
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
+        return buildErrorResponse(HttpStatus.NOT_FOUND, exception.getMessage());
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -47,51 +42,40 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     public ResponseEntity<Map<String, Object>> handleInvalidTypeException(MethodArgumentTypeMismatchException exception) {
-        Map<String, Object> errorResponse = new HashMap<>();
-        String message = MessageFormat.format("Invalid value for {0}", exception.getName());
-        errorResponse.put("timestamp", LocalDateTime.now());
-        errorResponse.put("status", HttpStatus.BAD_REQUEST.value());
-        errorResponse.put("error", HttpStatus.BAD_REQUEST.getReasonPhrase());
-        errorResponse.put("message", message);
 
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
+        return buildErrorResponse(HttpStatus.BAD_REQUEST, MessageFormat.format("Invalid value for {0}", exception.getName()));
     }
 
     @ExceptionHandler(StaffingHasProjectHistoryException.class)
     public ResponseEntity<Map<String, Object>> handleStaffingHasProjectHistoryException(StaffingHasProjectHistoryException exception) {
-        Map<String, Object> errorResponse = new HashMap<>();
-        errorResponse.put("timestamp", LocalDateTime.now());
-        errorResponse.put("status", HttpStatus.CONFLICT.value());
-        errorResponse.put("error", HttpStatus.CONFLICT.getReasonPhrase());
-        errorResponse.put("message", exception.getMessage());
 
-        return ResponseEntity.status(HttpStatus.CONFLICT).body(errorResponse);
+        return buildErrorResponse(HttpStatus.CONFLICT, exception.getMessage());
     }
 
     @ExceptionHandler(EmptyPatchRequestException.class)
     public ResponseEntity<Map<String, Object>> handleEmptyPatchRequestException(EmptyPatchRequestException exception) {
-        Map<String, Object> errorResponse = new HashMap<>();
-        errorResponse.put("timestamp", LocalDateTime.now());
-        errorResponse.put("status", HttpStatus.BAD_REQUEST.value());
-        errorResponse.put("error", HttpStatus.BAD_REQUEST.getReasonPhrase());
-        errorResponse.put("message", exception.getMessage());
 
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
+        return buildErrorResponse(HttpStatus.BAD_REQUEST, exception.getMessage());
     }
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<Map<String, Object>> handleHttpMessageNotReadableException(HttpMessageNotReadableException exception) {
-        Map<String, Object> errorResponse = new HashMap<>();
-
         String message = exception.getMostSpecificCause() instanceof DateTimeException
                 ? "Invalid date format"
                 : "Malformed request json";
 
+        return buildErrorResponse(HttpStatus.BAD_REQUEST, message);
+    }
+
+    private ResponseEntity<Map<String, Object>> buildErrorResponse(
+            HttpStatus status, String message) {
+
+        Map<String, Object> errorResponse = new HashMap<>();
         errorResponse.put("timestamp", LocalDateTime.now());
-        errorResponse.put("status", HttpStatus.BAD_REQUEST.value());
-        errorResponse.put("error", HttpStatus.BAD_REQUEST.getReasonPhrase());
+        errorResponse.put("status", status.value());
+        errorResponse.put("error", status.getReasonPhrase());
         errorResponse.put("message", message);
 
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
+        return ResponseEntity.status(status).body(errorResponse);
     }
 }
