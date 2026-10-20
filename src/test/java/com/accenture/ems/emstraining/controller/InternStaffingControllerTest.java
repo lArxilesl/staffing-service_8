@@ -1,0 +1,449 @@
+package com.accenture.ems.emstraining.controller;
+
+
+import com.accenture.ems.emstraining.exception.GlobalExceptionHandler;
+import com.accenture.ems.emstraining.exception.ResourceNotFoundException;
+import com.accenture.ems.emstraining.exception.StaffingHasProjectHistoryException;
+import com.accenture.ems.emstraining.model.*;
+import com.accenture.ems.emstraining.service.InternStaffingService;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
+import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.MockMvc;
+
+import java.time.LocalDateTime;
+import java.util.Collections;
+import java.util.Optional;
+
+import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+
+@WebMvcTest(InternStaffingController.class)
+@Import(GlobalExceptionHandler.class)
+@DisplayName("InternStaffingController tests")
+class InternStaffingControllerTest {
+
+    private static final String BASE_URL = "/api/intern/staffing";
+
+    @Autowired
+    private MockMvc mockMvc;
+
+    @Autowired
+    private ObjectMapper objectMapper;
+
+    @MockBean
+    private InternStaffingService internStaffingService;
+
+    private InternStaffingSummaryResponse internStaffingSummaryResponse;
+    private InternStaffingResponse internStaffingResponse;
+
+    @BeforeEach
+    void setUp() {
+        EmployeeResponse employeeResponse = new EmployeeResponse();
+        employeeResponse.setEmployeeId(1L);
+        employeeResponse.setName("Name1");
+        employeeResponse.setSurname("Surname1");
+
+        InternHiringStatusResponse statusResponse = new InternHiringStatusResponse();
+        statusResponse.setId(2L);
+        statusResponse.setStatus("Status2");
+
+        internStaffingResponse = new InternStaffingResponse();
+        internStaffingResponse.setId(1L);
+        internStaffingResponse.setEmployee(employeeResponse);
+        internStaffingResponse.setInternHiringStatus(statusResponse);
+        internStaffingResponse.setInternshipWorkload(1);
+        internStaffingResponse.setWorkload(10);
+        internStaffingResponse.setExtension(LocalDateTime.parse("2026-10-01T00:00:00"));
+
+        internStaffingSummaryResponse = new InternStaffingSummaryResponse();
+        internStaffingSummaryResponse.setId(1L);
+        internStaffingSummaryResponse.setEmployeeId(1L);
+        internStaffingSummaryResponse.setInternHiringStatusId(2L);
+        internStaffingSummaryResponse.setExtension(LocalDateTime.parse("2026-10-01T00:00:00"));
+        internStaffingSummaryResponse.setInternshipWorkload(1);
+        internStaffingSummaryResponse.setWorkload(10);
+
+    }
+
+    @Test
+    @DisplayName("GET /api/intern/staffing should return 200 OK and list of summary responses")
+    void getInternStaffingShouldReturn200AndListOfSummaryResponses() throws Exception {
+        when(internStaffingService.getAll()).thenReturn(Collections.singletonList(internStaffingSummaryResponse));
+
+        mockMvc.perform(get(BASE_URL))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].id").value(1L))
+                .andExpect(jsonPath("$[0].employeeId").value(1L));
+
+        verify(internStaffingService, times(1)).getAll();
+    }
+
+    @Test
+    @DisplayName("GET /api/intern/staffing should return 200 OK and empty list when no staffings exist")
+    void getInternStaffingShouldReturn200AndEmptyListWhenNoStaffings() throws Exception {
+        when(internStaffingService.getAll()).thenReturn(Collections.emptyList());
+
+        mockMvc.perform(get(BASE_URL))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$").isArray())
+                .andExpect(jsonPath("$").isEmpty());
+
+        verify(internStaffingService, times(1)).getAll();
+    }
+
+    @Test
+    @DisplayName("GET /api/intern/staffing/{id} should return 200 OK and staffing response when staffing exists")
+    void getInternStaffingShouldReturn200AndStaffingResponseWhenStaffingExists() throws Exception {
+        when(internStaffingService.getById(1L)).thenReturn(Optional.of(internStaffingResponse));
+
+        mockMvc.perform(get(BASE_URL + "/{id}", 1L))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(1L))
+                .andExpect(jsonPath("$.employee.name").value("Name1"))
+                .andExpect(jsonPath("$.internHiringStatus.id").value(2L));
+
+        verify(internStaffingService, times(1)).getById(1L);
+    }
+
+    @Test
+    @DisplayName("GET /api/intern/staffing/{id} should return 404 Not Found when staffing does not exist")
+    void getInternStaffingShouldReturn404WhenStaffingDoesNotExist() throws Exception {
+        when(internStaffingService.getById(42L)).thenReturn(Optional.empty());
+
+        mockMvc.perform(get(BASE_URL + "/{id}", 42L))
+                .andExpect(status().isNotFound());
+
+        verify(internStaffingService, times(1)).getById(42L);
+    }
+
+    @Test
+    @DisplayName("GET /api/intern/staffing/{id} should return 400 Bad Request when id is invalid")
+    void getInternStaffingShouldReturn400BadRequestWhenIdIsInvalid() throws Exception {
+
+        mockMvc.perform(get(BASE_URL + "/{id}", "Forty Two"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.status").value(400))
+                .andExpect(jsonPath("$.message").value("Invalid value for id"));
+
+        verifyZeroInteractions(internStaffingService);
+    }
+
+    @Test
+    @DisplayName("POST /api/intern/staffing should return 201 Created when request is valid")
+    void postInternStaffingShouldReturn201CreatedWhenRequestIsValid() throws Exception {
+        InternStaffingRequest request = new InternStaffingRequest();
+        request.setEmployeeId(1L);
+        request.setInternHiringStatusId(2L);
+        request.setWorkload(1);
+        request.setInternshipWorkload(10);
+        request.setExtension(LocalDateTime.parse("2026-10-01T00:00:00"));
+
+        when(internStaffingService.create(request)).thenReturn(internStaffingResponse);
+
+        mockMvc.perform(post(BASE_URL)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.id").value(1L))
+                .andExpect(jsonPath("$.employee.name").value("Name1"))
+                .andExpect(jsonPath("$.internHiringStatus.id").value(2L));
+
+        verify(internStaffingService, times(1)).create(request);
+    }
+
+    @Test
+    @DisplayName("POST /api/intern/staffing should return 400 Bad Request when required fields are missing")
+    void postInternStaffingShouldReturn400BadRequestWhenRequiredFieldsAreMissing() throws Exception {
+        InternStaffingRequest request = new InternStaffingRequest();
+
+        mockMvc.perform(post(BASE_URL)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.status").value(400))
+                .andExpect(jsonPath("$.messages.extension").exists())
+                .andExpect(jsonPath("$.messages.internHiringStatusId").exists())
+                .andExpect(jsonPath("$.messages.employeeId").exists());
+
+        verify(internStaffingService, never()).create(request);
+    }
+
+    @Test
+    @DisplayName("POST /api/intern/staffing should return 404 Not Found when employee does not exist")
+    void postInternStaffingShouldReturn404NotFoundWhenEmployeeDoesNotExist() throws Exception {
+        InternStaffingRequest request = new InternStaffingRequest();
+        request.setEmployeeId(42L);
+        request.setInternHiringStatusId(2L);
+        request.setExtension(LocalDateTime.parse("2026-10-01T00:00:00"));
+
+        when(internStaffingService.create(request))
+                .thenThrow(new ResourceNotFoundException("Employee with id: 42 not found"));
+
+        mockMvc.perform(post(BASE_URL)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.status").value(404))
+                .andExpect(jsonPath("$.message").value("Employee with id: 42 not found"));
+    }
+
+    @DisplayName("POST /api/intern/staffing should return 400 Bad Request with malformed json")
+    @ParameterizedTest
+    @ValueSource(strings = {
+            "{\"name\":\"line1\nline2\"}", // raw newline
+            "{\"name\":\"Forty \"Two\"\"}", // unescaped quote
+            "{\"value\":\"\\x\"}", // invalid escape
+            "{\"name\":\"Forty\",}", // trailing comma
+            "{\"name\":\"Two\"" // missing closing brace
+    })
+    void postInternStaffingShouldReturn400BadRequestWithMalformedJson(String malformedJson) throws Exception {
+
+        mockMvc.perform(post(BASE_URL)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(malformedJson))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.status").value(400))
+                .andExpect(jsonPath("$.message").value("Malformed request json"));
+
+        verifyZeroInteractions(internStaffingService);
+    }
+
+    @Test
+    @DisplayName("POST /api/intern/staffing should return 400 Bad Request when date format invalid")
+    void postInternStaffingShouldReturn400BadRequestWhenDateFormatInvalid() throws Exception {
+        String requestJson = "{\n" +
+                "  \"employeeId\": 1,\n" +
+                "  \"internHiringStatusId\": 1,\n" +
+                "  \"internshipWorkload\": 1,\n" +
+                "  \"workload\": 10,\n" +
+                "  \"extension\": \"2026-02-30T00:00:00\"\n" +
+                "}\n";
+
+        mockMvc.perform(post(BASE_URL)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestJson))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.status").value(400))
+                .andExpect(jsonPath("$.message").value("Invalid date format"));
+
+        verifyZeroInteractions(internStaffingService);
+    }
+
+    @Test
+    @DisplayName("POST /api/intern/staffing should return 400 Bad Request when empty request")
+    void postInternStaffingShouldReturn400BadRequestWhenEmptyRequest() throws Exception {
+        String requestJson = "{}";
+
+        mockMvc.perform(post(BASE_URL)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestJson))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.status").value(400))
+                .andExpect(jsonPath("$.messages.extension").value("Extension cannot be null"))
+                .andExpect(jsonPath("$.messages.internHiringStatusId").value("must not be null"))
+                .andExpect(jsonPath("$.messages.employeeId").value("must not be null"));
+
+        verifyZeroInteractions(internStaffingService);
+    }
+
+    @Test
+    @DisplayName("POST /api/intern/staffing should return 400 Bad Request when workload is negative")
+    void postInternStaffingShouldReturn400BadRequestWhenWorkloadIsNegative() throws Exception {
+        InternStaffingRequest request = new InternStaffingRequest();
+        request.setEmployeeId(1L);
+        request.setInternHiringStatusId(2L);
+        request.setExtension(LocalDateTime.parse("2026-10-01T00:00:00"));
+        request.setWorkload(-1);
+
+        mockMvc.perform(post(BASE_URL)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.status").value(400))
+                .andExpect(jsonPath("$.messages.workload").value("workload cannot be negative"));
+
+        verifyZeroInteractions(internStaffingService);
+    }
+
+    @Test
+    @DisplayName("PATCH /api/intern/staffing/{id} should return 200 OK and updated staffing")
+    void patchInternStaffingShouldReturn200AndUpdatedStaffingWhenRequestIsValid() throws Exception {
+        InternStaffingPatchRequest request = new InternStaffingPatchRequest();
+        request.setWorkload(42);
+
+        when(internStaffingService.update(1L, request)).thenReturn(internStaffingResponse);
+
+        mockMvc.perform(patch(BASE_URL + "/{id}", 1L)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(1L));
+
+        verify(internStaffingService, times(1)).update(1L, request);
+    }
+
+    @Test
+    @DisplayName("PATCH /api/intern/staffing/{id} should return 404 Not Found when staffing does not exist")
+    void patchInternStaffingShouldReturn404NotFoundWhenStaffingDoesNotExist() throws Exception {
+        InternStaffingPatchRequest request = new InternStaffingPatchRequest();
+        request.setEmployeeId(1L);
+
+        when(internStaffingService.update(42L, request))
+                .thenThrow(new ResourceNotFoundException("Intern Staffing with id: 42 not found"));
+
+        mockMvc.perform(patch(BASE_URL + "/{id}", 42L)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.status").value(404))
+                .andExpect(jsonPath("$.message").value("Intern Staffing with id: 42 not found"));
+    }
+
+    @Test
+    @DisplayName("PATCH /api/intern/staffing/{id} should return 400 Bad Request when id is invalid")
+    void patchInternStaffingShouldReturn400BadRequestWhenIdIsInvalid() throws Exception {
+        InternStaffingPatchRequest request = new InternStaffingPatchRequest();
+
+        mockMvc.perform(patch(BASE_URL + "/{id}", "Forty Two")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.status").value(400))
+                .andExpect(jsonPath("$.message").value("Invalid value for id"));
+
+        verifyZeroInteractions(internStaffingService);
+    }
+
+    @DisplayName("PATCH /api/intern/staffing/{id} should return 400 Bad Request with malformed json")
+    @ParameterizedTest
+    @ValueSource(strings = {
+            "{\"name\":\"line1\nline2\"}", // raw newline
+            "{\"name\":\"Forty \"Two\"\"}", // unescaped quote
+            "{\"value\":\"\\x\"}", // invalid escape
+            "{\"name\":\"Forty\",}", // trailing comma
+            "{\"name\":\"Two\"" // missing closing brace
+    })
+    void patchInternStaffingShouldReturn400BadRequestWithMalformedJson(String malformedJson) throws Exception {
+
+        mockMvc.perform(patch(BASE_URL + "/{id}", 1L)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(malformedJson))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.status").value(400))
+                .andExpect(jsonPath("$.message").value("Malformed request json"));
+
+        verifyZeroInteractions(internStaffingService);
+    }
+
+    @Test
+    @DisplayName("PATCH /api/intern/staffing/{id} should return 400 Bad Request when date format invalid")
+    void patchInternStaffingShouldReturn400BadRequestWhenDateFormatInvalid() throws Exception {
+        String requestJson = "{\n" +
+                "  \"employeeId\": 1,\n" +
+                "  \"internHiringStatusId\": 1,\n" +
+                "  \"internshipWorkload\": 1,\n" +
+                "  \"workload\": 10,\n" +
+                "  \"extension\": \"2026-02-30T00:00:00\"\n" +
+                "}\n";
+
+        mockMvc.perform(patch(BASE_URL + "/{id}", 1L)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestJson))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.status").value(400))
+                .andExpect(jsonPath("$.message").value("Invalid date format"));
+
+        verifyZeroInteractions(internStaffingService);
+    }
+
+    @Test
+    @DisplayName("PATCH /api/intern/staffing/{id} should return 400 Bad Request when empty request")
+    void patchInternStaffingShouldReturn400BadRequestWhenEmptyRequest() throws Exception {
+        String requestJson = "{}";
+
+        mockMvc.perform(patch(BASE_URL + "/{id}", 1L)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestJson))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.status").value(400))
+                .andExpect(jsonPath("$.message").value("Patch request must contain at least one field to update"));
+
+        verifyZeroInteractions(internStaffingService);
+    }
+
+    @Test
+    @DisplayName("PATCH /api/intern/staffing/{id} should return 400 Bad Request when workload is negative")
+    void patchInternStaffingShouldReturn400BadRequestWhenWorkloadIsNegative() throws Exception {
+        InternStaffingPatchRequest request = new InternStaffingPatchRequest();
+        request.setWorkload(-1);
+
+        mockMvc.perform(patch(BASE_URL + "/{id}", 1L)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.status").value(400))
+                .andExpect(jsonPath("$.messages.workload").value("workload cannot be negative"));
+
+        verifyZeroInteractions(internStaffingService);
+    }
+
+    @Test
+    @DisplayName("DELETE /api/intern/staffing/{id} should return 204 No Content when deleted")
+    void deleteInternStaffingShouldReturn204NoContentWhenDeleted() throws Exception {
+        when(internStaffingService.existsById(1L)).thenReturn(true);
+
+        mockMvc.perform(delete(BASE_URL + "/{id}", 1L))
+                .andExpect(status().isNoContent())
+                .andExpect(content().string(""));
+
+        verify(internStaffingService, times(1)).delete(1L);
+    }
+
+    @Test
+    @DisplayName("DELETE /api/intern/staffing/{id} should return 404 Not Found when staffing does not exist")
+    void deleteInternStaffingShouldReturn404NotFoundWhenStaffingDoesNotExist() throws Exception {
+        when(internStaffingService.existsById(42L)).thenReturn(false);
+
+        mockMvc.perform(delete(BASE_URL + "/{id}", 42L))
+                .andExpect(status().isNotFound());
+
+        verify(internStaffingService, never()).delete(42L);
+    }
+
+    @Test
+    @DisplayName("DELETE /api/intern/staffing/{id} should return 409 Conflict when staffing has project history")
+    void deleteInternStaffingShouldReturn409ConflictWhenStaffingHasProjectHistory() throws Exception {
+        doThrow(new StaffingHasProjectHistoryException("Cannot delete intern staffing with id: 42 because it has project history"))
+                .when(internStaffingService).delete(42L);
+        when(internStaffingService.existsById(42L)).thenReturn(true);
+
+        mockMvc.perform(delete(BASE_URL + "/{id}", 42L))
+                .andExpect(status().isConflict())
+                .andExpect(jsonPath("$.status").value(409))
+                .andExpect(jsonPath("$.message").value("Cannot delete intern staffing with id: 42 because it has project history"));
+
+        verify(internStaffingService, times(1)).delete(42L);
+    }
+
+    @Test
+    @DisplayName("DELETE /api/intern/staffing/{id} should return 400 Bad Request when id is invalid")
+    void deleteInternStaffingShouldReturn400BadRequestWhenIdIsInvalid() throws Exception {
+
+        mockMvc.perform(delete(BASE_URL + "/{id}", "Forty Two"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.status").value(400))
+                .andExpect(jsonPath("$.message").value("Invalid value for id"));
+
+        verifyZeroInteractions(internStaffingService);
+    }
+}
